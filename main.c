@@ -9,10 +9,63 @@
 #include "header/bufferOperate.h"
 #include "cjson/cJSON.h"
 
+//Send socket data
+// headData: struts data, contains size of jsonData
+// jsonData: json string data, parameters upload
+// handler: socket handler
+int sendSocketData(struct tcpRequire headData, char *jsonData, int sfd){
+  	unsigned char buffSend[20];
+  	//json string length
+  	headData.jsonSize=strlen(jsonData);
+  	getSendDataInBinary(buffSend, headData);
+  	//send head
+  	int r;
+  	r=send(sfd, &buffSend, 20, 0);
+  	if(r==-1){
+  		return -1;
+  	}
+  	//send json parameters
+  	r=send(sfd, jsonData, headData.jsonSize, 0);
+  	if(r==-1)
+  		return -1;
+  	return 0;
+}
+
+int receiveSocketStruct(struct tcpRequire *returnStruct, int sfd){
+	  int r;
+	//unsigned char returnedBuff[20];
+	  struct tcpRequire tempStruct;
+	  r=recv(sfd, &(returnStruct->firstInt) ,4, MSG_WAITALL);
+	  printf("&returnStruct->firstInt is %08x;\n", tempStruct.firstInt);
+	  r=recv(sfd, &(returnStruct->secondInt) ,4, MSG_WAITALL);
+	  printf("&returnStruct->secondInt is %08x;\n", tempStruct.secondInt);
+	  r=recv(sfd, &(returnStruct->thirdInt) ,4, MSG_WAITALL);
+	  printf("&returnStruct->thirdInt is %08x;\n", tempStruct.thirdInt);
+	  r=recv(sfd, &(returnStruct->fourthInt) ,4, MSG_WAITALL);
+	  printf("&returnStruct->fourthInt is %08x;\n", tempStruct.fourthInt);
+	  r=recv(sfd, &(returnStruct->jsonSize) ,4, MSG_WAITALL);
+	  printf("&returnStruct->fifthInt is %08x;\n", tempStruct.jsonSize);
+	  //unsigned char bufftemp[returnStruct.jsonSize];
+	 // memcpy(returnStruct, &tempStruct, sizeof(tempStruct));
+	  //printf("sizeof char=%08x;%08x;%08x;%08x;%08x;\n", returnStruct.firstInt,returnStruct.secondInt,returnStruct.thirdInt,returnStruct.fourthInt,returnStruct.jsonSize);
+	/*  r=recv(sfd, buff ,returnStruct->jsonSize, MSG_WAITALL);
+	  memcpy(buff, tempBuff, sizeof(tempBuff));*/
+	  return r;
+}
+//Get json data after struct data
+//size: size of json string data
+//buff: json string data
+//sfd: socket file descriptor
+int receiveSocketJson(int size, unsigned char *buff, int sfd){
+	return  recv(sfd, buff, size, MSG_WAITALL);
+}
+
+
+
 int main(){
   //connect handler; vsfd is used to receive video data
   int sfd, ffd, vsfd;
-  //r1 is used to receive video data
+  //r1 is used to receive video databuff
   int r, r1;
   int len;
   int fileSize;//File size of received;
@@ -43,8 +96,6 @@ int main(){
 
   printf("Accept successfully~\n");
 
-
-
    //prepare struct data
   	struct tcpRequire testStruct;
   	testStruct.firstInt=0x000000ff;
@@ -55,43 +106,42 @@ int main(){
   	//r=send(sfd, &testStruct.thirdInt, 4, 0);
   	testStruct.fourthInt=0x03e80000;
   	//r=send(sfd, &testStruct.fourthInt, 4, 0);
-  	unsigned char buffSend[20];
-
 
   	char tempJson[] = "{ \"EncryptType\" : \"MD5\", \"LoginType\" : \"DVRIPWeb\", \"PassWord\" : \"6QNMIQGe\", \"UserName\" : \"admin\" }\n";
-  	//json string length
-  	testStruct.jsonSize=strlen(tempJson);
-  	getSendDataInBinary(buffSend, testStruct);
-  	//send head
-  	r=send(sfd, &buffSend, 20, 0);
-  	//send json parameters
-  	r=send(sfd, &tempJson, testStruct.jsonSize, 0);
+  	//send prepared data to ipc
+	if(sendSocketData(testStruct, tempJson, sfd)==-1){
+		printf("Something has wrong on Sending User name and password~");
+		return 0;
+	}
 
-  //接收文件
+
+	//Receive and analysis the data
   struct tcpRequire returnStruct;
-
-  //unsigned char returnedBuff[20];
-  r=recv(sfd, &returnStruct.firstInt ,4, MSG_WAITALL);
-  r=recv(sfd, &returnStruct.secondInt ,4, MSG_WAITALL);
-  r=recv(sfd, &returnStruct.thirdInt ,4, MSG_WAITALL);
-  r=recv(sfd, &returnStruct.fourthInt ,4, MSG_WAITALL);
-  r=recv(sfd, &returnStruct.jsonSize ,4, MSG_WAITALL);
-  unsigned char buff[128];
-  //printf("sizeof char=%08x;%08x;%08x;%08x;%08x;\n", returnStruct.firstInt,returnStruct.secondInt,returnStruct.thirdInt,returnStruct.fourthInt,returnStruct.jsonSize);
-
-  r=recv(sfd, buff ,returnStruct.jsonSize, MSG_WAITALL);
-  printf("firstInt is %08x;\n", returnStruct.firstInt);
-  printf("secondInt is %08x;\n", returnStruct.secondInt);
+  receiveSocketStruct(&returnStruct, sfd);
+  unsigned char buff[returnStruct.jsonSize];
+  if(receiveSocketJson(returnStruct.jsonSize, buff, sfd)==-1){
+	printf("Something has wrong on Receiving first data~");
+	return 0;
+  }
 
   printf("size of returned data: %d\n",returnStruct.jsonSize);
   int countBuff;
   //for(countBuff=0; countBuff<128; countBuff++)
   printf("Received %d string is : %s;\n", countBuff, buff);
 
+  // Get SessionID
+	cJSON *json, *jsonSessionIDObj;
+	json=cJSON_Parse(buff);
+	jsonSessionIDObj = cJSON_GetObjectItem(json, "SessionID");
+	//Get origin sessionID
+	printf("session id is : %s\n", jsonSessionIDObj->valuestring);
+	char *sessionID = jsonSessionIDObj->valuestring;
 
   //r=connect(sfd, (struct sockaddr*)&dr, sizeof(dr));
 
-  //prepare struct data
+/************************************Send Name SystemInfo*******************************************/
+
+    //prepare struct data to request data
 	struct tcpRequire secondStruct;
 	secondStruct.firstInt=0x000000ff;
 	//r=send(sfd, &testStruct.firstInt, 4, 0);
@@ -102,25 +152,68 @@ int main(){
 	secondStruct.fourthInt=0x03fc0000;
 	//r=send(sfd, &testStruct.fourthInt, 4, 0);
 
-	// Get SessionID
-	cJSON *json, *jsonSessionIDObj;
-	json=cJSON_Parse(tempJson);
-	jsonSessionIDObj = cJSON_GetObjectItem(json, "SessionID");
-	char *sessionID = jsonSessionIDObj->valuestring;
-	cJSON_Delete(jsonSessionIDObj);
+	cJSON *jsonDst, *jsonSessionIDObjDst;
+	//free(tempJson);
+  	char *tempDstJson = "{ \"Name\" : \"SystemInfo\", \"SessionID\" : \"0x00000040\" }\n";
+
+  	//Pay the value to send json
+  	jsonDst= cJSON_Parse(tempDstJson);
+  	jsonSessionIDObjDst = cJSON_GetObjectItem(jsonDst, "SessionID");
+  	jsonSessionIDObjDst->valuestring=sessionID;
+
+	char *requestString=cJSON_Print(jsonDst);
+
+	printf("%s\n",requestString);
+
+	//Release json obj
 	cJSON_Delete(json);
+	cJSON_Delete(jsonDst);
 
-	free(tempJson);
-  	*tempJson = "{ \"Name\" : \"SystemInfo\", \"SessionID\" : \"0x00000040\" }\n";
+	//send prepared data to ipc
+	if(sendSocketData(secondStruct, tempDstJson, sfd)==-1){
+		printf("Something has wrong on Sending Name SystemInfo~");
+		return 0;
+	}
 
-  	//json string length
-  	secondStruct.jsonSize=strlen(tempJson);
-  	getSendDataInBinary(buffSend, secondStruct);
-  	//send head
-  	r=send(sfd, &buffSend, 20, 0);
-  	//send json parameters
-  	r=send(sfd, &tempJson, testStruct.jsonSize, 0);
+  	/************************************Send KeepAlive*******************************************/
 
+  	secondStruct.firstInt=0x000000ff;
+	//r=send(sfd, &testStruct.firstInt, 4, 0);
+	secondStruct.secondInt=0x00000043;
+	//r=send(sfd, &testStruct.secondInt, 4, 0);
+	secondStruct.thirdInt=0x0;
+	//r=send(sfd, &testStruct.thirdInt, 4, 0);
+	secondStruct.fourthInt=0x03ee0000;
+	//r=send(sfd, &testStruct.fourthInt, 4, 0);
+
+	//free(tempJson);
+  	cJSON *jsonKeepalive, *jsonSessionIDKeepalive;
+
+	char *tempKeepaliveJson = "{ \"Name\" : \"KeepAlive\", \"SessionID\" : \"0x00000040\" }\n";
+
+	//Pay the value to send json
+	jsonKeepalive= cJSON_Parse(tempKeepaliveJson);
+	jsonSessionIDKeepalive = cJSON_GetObjectItem(jsonDst, "SessionID");
+	jsonSessionIDKeepalive->valuestring=sessionID;
+
+	char *requestKeepAliveString=cJSON_Print(jsonDst);
+
+	printf("%s\n",requestKeepAliveString);
+
+	//Release json obj
+	cJSON_Delete(jsonKeepalive);
+	cJSON_Delete(jsonSessionIDKeepalive);
+
+	//send prepared data to ipc
+	if(sendSocketData(secondStruct, tempDstJson, sfd)==-1){
+		printf("Something has wrong on Sending KeepAlive~");
+		return 0;
+	}
+
+
+
+  	//free requestString
+  	//free(requestString);
 
   //创建文件
  /* ffd=open(filename, O_RDWR|O_CREAT, 0666);
