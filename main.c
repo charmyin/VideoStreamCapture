@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include "header/bufferOperate.h"
 #include "cjson/cJSON.h"
+#include "header/timeOperate.h"
 
 //Send socket data
 // headData: struts data, contains size of jsonData
@@ -16,7 +17,10 @@
 int sendSocketData(struct tcpRequire headData, char *jsonData, int sfd){
   	unsigned char buffSend[20];
   	//json string length
-  	headData.jsonSize=strlen(jsonData);
+  	if(jsonData==0)
+  		headData.jsonSize=0;
+	else
+		headData.jsonSize=strlen(jsonData);
   	getSendDataInBinary(buffSend, headData);
   	//send head
   	int r;
@@ -25,9 +29,11 @@ int sendSocketData(struct tcpRequire headData, char *jsonData, int sfd){
   		return -1;
   	}
   	//send json parameters
-  	r=send(sfd, jsonData, headData.jsonSize, 0);
-  	if(r==-1)
-  		return -1;
+  	if(jsonData!=0){
+		r=send(sfd, jsonData, headData.jsonSize, 0);
+		if(r==-1)
+			return -1;
+  	}
   	return 0;
 }
 
@@ -123,6 +129,7 @@ int main(){
 	printf("Something has wrong on Receiving first data~");
 	return 0;
   }
+ // free(buff);
 
   printf("size of returned data: %d\n",returnStruct.jsonSize);
   int countBuff;
@@ -144,13 +151,9 @@ int main(){
     //prepare struct data to request data
 	struct tcpRequire secondStruct;
 	secondStruct.firstInt=0x000000ff;
-	//r=send(sfd, &testStruct.firstInt, 4, 0);
 	secondStruct.secondInt=0x00000040;
-	//r=send(sfd, &testStruct.secondInt, 4, 0);
 	secondStruct.thirdInt=0x0;
-	//r=send(sfd, &testStruct.thirdInt, 4, 0);
 	secondStruct.fourthInt=0x03fc0000;
-	//r=send(sfd, &testStruct.fourthInt, 4, 0);
 
 	cJSON *jsonDst, *jsonSessionIDObjDst;
 	//free(tempJson);
@@ -169,11 +172,21 @@ int main(){
 	cJSON_Delete(json);
 	cJSON_Delete(jsonDst);
 
+
 	//send prepared data to ipc
-	if(sendSocketData(secondStruct, tempDstJson, sfd)==-1){
+	if(sendSocketData(secondStruct, requestString, sfd)==-1){
 		printf("Something has wrong on Sending Name SystemInfo~");
 		return 0;
 	}
+	//Receive the channel info and so on
+   receiveSocketStruct(&returnStruct, sfd);
+   unsigned char buff2[returnStruct.jsonSize];
+   if(receiveSocketJson(returnStruct.jsonSize, buff2, sfd)==-1){
+	  printf("Something has wrong on Receiving first data~");
+	  return 0;
+   }
+
+   printf("Received string is : %s;\n", buff2);
 
   	/************************************Send KeepAlive*******************************************/
 
@@ -205,12 +218,84 @@ int main(){
 	cJSON_Delete(jsonSessionIDKeepalive);
 
 	//send prepared data to ipc
-	if(sendSocketData(secondStruct, tempDstJson, sfd)==-1){
+	if(sendSocketData(secondStruct, requestKeepAliveString, sfd)==-1){
 		printf("Something has wrong on Sending KeepAlive~");
 		return 0;
 	}
 
+/************************************Time setting***********************************/
 
+  	secondStruct.firstInt=0x000000ff;
+	secondStruct.secondInt=0x00000089;
+	secondStruct.thirdInt=0x00000001;
+	secondStruct.fourthInt=0x06360000;
+
+	//free(tempJson);
+  	cJSON *jsonSetTime, *jsonSessionIDSetTime, *jsonOPTimeSettingNoRTCSetTime;
+  	char * formatRealTime = now();
+
+	char *tempSetTimeJson = "{ \"Name\" : \"OPTimeSettingNoRTC\", \"OPTimeSettingNoRTC\" : \"20140313 08:03:07\", \"SessionID\" : \"0x89\" }\n";
+
+	//Pay the value to send json
+	jsonSetTime= cJSON_Parse(tempSetTimeJson);
+	jsonSessionIDSetTime = cJSON_GetObjectItem(jsonSetTime, "SessionID");
+	jsonSessionIDSetTime->valuestring=sessionID;
+	jsonOPTimeSettingNoRTCSetTime = cJSON_GetObjectItem(jsonSetTime, "OPTimeSettingNoRTC");
+	jsonOPTimeSettingNoRTCSetTime->valuestring=formatRealTime;
+
+	char *requestSetTimeString=cJSON_Print(jsonSetTime);
+
+	printf("%s\n",requestSetTimeString);
+
+	//Release json obj
+	cJSON_Delete(jsonSetTime);
+	cJSON_Delete(jsonSessionIDSetTime);
+
+	//send prepared data to ipc
+	if(sendSocketData(secondStruct, requestSetTimeString, sfd)==-1){
+		printf("Something has wrong on Sending Time setting~");
+		return 0;
+	}
+
+	/***************************Send name & session id again*****************************/
+
+	secondStruct.firstInt=0x000000ff;
+	secondStruct.secondInt=0x00000089;
+	secondStruct.thirdInt=0x0;
+	secondStruct.fourthInt=0x05dc0000;
+
+	//free(tempJson);
+	tempDstJson = "{ \"Name\" : \"\", \"SessionID\" : \"0x00000040\" }\n";
+
+	//Pay the value to send json
+	jsonDst= cJSON_Parse(tempDstJson);
+	jsonSessionIDObjDst = cJSON_GetObjectItem(jsonDst, "SessionID");
+	jsonSessionIDObjDst->valuestring=sessionID;
+
+	requestString=cJSON_Print(jsonDst);
+
+	printf("%s\n",requestString);
+
+	//Release json obj
+	cJSON_Delete(json);
+	cJSON_Delete(jsonDst);
+
+	//send prepared data to ipc
+	if(sendSocketData(secondStruct, requestString, sfd)==-1){
+		printf("Something has wrong on Sending Name SystemInfo~");
+		return 0;
+	}
+
+	secondStruct.firstInt=0x000000ff;
+	secondStruct.secondInt=0x00000089;
+	secondStruct.thirdInt=0x0;
+	secondStruct.fourthInt=0x061a0000;
+	//send prepared data to ipc
+	requestString=0;
+	if(sendSocketData(secondStruct, requestString, sfd)==-1){
+		printf("Something has wrong on Sending Name SystemInfo~");
+		return 0;
+	}
 
   	//free requestString
   	//free(requestString);
