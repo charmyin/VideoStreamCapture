@@ -142,7 +142,8 @@ int main(){
 	jsonSessionIDObj = cJSON_GetObjectItem(json, "SessionID");
 	//Get origin sessionID
 	printf("session id is : %s\n", jsonSessionIDObj->valuestring);
-	char *sessionID = jsonSessionIDObj->valuestring;
+	char *sessionID =malloc(sizeof(sessionID));
+	strcpy(sessionID, jsonSessionIDObj->valuestring);
 
   //r=connect(sfd, (struct sockaddr*)&dr, sizeof(dr));
 
@@ -162,7 +163,8 @@ int main(){
   	//Pay the value to send json
   	jsonDst= cJSON_Parse(tempDstJson);
   	jsonSessionIDObjDst = cJSON_GetObjectItem(jsonDst, "SessionID");
-  	jsonSessionIDObjDst->valuestring=sessionID;
+  	jsonSessionIDObjDst->valuestring=malloc(sizeof(sessionID));
+  	strcpy(jsonSessionIDObjDst->valuestring,sessionID);
 
 	char *requestString=cJSON_Print(jsonDst);
 
@@ -206,10 +208,11 @@ int main(){
 
 	//Pay the value to send json
 	jsonKeepalive= cJSON_Parse(tempKeepaliveJson);
-	jsonSessionIDKeepalive = cJSON_GetObjectItem(jsonDst, "SessionID");
-	jsonSessionIDKeepalive->valuestring=sessionID;
+	jsonSessionIDKeepalive = cJSON_GetObjectItem(jsonKeepalive, "SessionID");
+	jsonSessionIDObjDst->valuestring=malloc(sizeof(sessionID));
+	strcpy(jsonSessionIDKeepalive->valuestring,sessionID);
 
-	char *requestKeepAliveString=cJSON_Print(jsonDst);
+	char *requestKeepAliveString=cJSON_Print(jsonKeepalive);
 
 	printf("%s\n",requestKeepAliveString);
 
