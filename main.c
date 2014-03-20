@@ -78,7 +78,7 @@ int main(){
   int len;
   int fileSize;//File size of received;
   int recvSize=0; // Number show how much bytes has been recevied; 23Bytes in 78Bytes;
-  char buf[4];
+  char buf[1514];
   char filename[100];
   struct sockaddr_in dr;
 
@@ -420,16 +420,17 @@ if(fork()==0){
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-	      /* ffd=open(filename, O_RDWR|O_CREAT, 0666);
+	      int  ffd=open("/home/charmyin/hello.h264", O_RDWR|O_CREAT, 0666);
 
-	       float i=0;*/
+	       float j=0;
 	       ////异常处理
 	       int i=1;
 	       //循环接收文件数据
 
-	       while(i<100){
-	     	  r=recv(sfd2, buf, 4, MSG_WAITALL);
-	     	  printf("Received child package: %08x\n", buf);
+	       while(i<1000){
+	     	  r=recv(sfd2, buf, 1514, MSG_WAITALL);
+	     	 // printf(" %\n", buf);
+	     	 write(ffd, buf, 1514);
 	     	/*  if(r==-1){
 	     		  printf("Receive wrong~%d\n", i);
 	     		  break;
@@ -438,6 +439,8 @@ if(fork()==0){
 	     	  //if(i==2)
 	     		//  break;
 	       }
+	       fflush(stdout);
+	       close(ffd);
 	       /*while(1){
 	         r=recv(cfd, &len, sizeof(len), MSG_WAITALL);
 	         if(len==0){
