@@ -34,22 +34,22 @@ int testmain()
 
 	int i = sizeof(buff);
 	int j;
-    for(j=0; j<i; j++){
+  /*  for(j=0; j<i; j++){
     	printf("%d char is : %02x\n", j+1, buff[j]);
-    }
+    }*/
 
-	printf("buffff---%x;---\n", buff);
+	//printf("buffff---%x;---\n", buff);
 
-	printf("sizeof char=%x;%08x;%08x;%08x;%08x;\n", testStruct.firstInt,testStruct.secondInt,testStruct.thirdInt,testStruct.fourthInt,testStruct.jsonSize);
+//	printf("sizeof char=%x;%08x;%08x;%08x;%08x;\n", testStruct.firstInt,testStruct.secondInt,testStruct.thirdInt,testStruct.fourthInt,testStruct.jsonSize);
 
 	return 0;
 }
 
 int getSendDataInBinary(char *buff, struct tcpRequire testStruct)
 {
-	printf("Size of tempJsonSize = %d\n;", sizeof(buff));
+	//printf("Size of tempJsonSize = %d\n;", sizeof(buff));
 	int sizestruct = sizeof(testStruct);
-	printf("size of testStruct = %d\n;char size=%d;\n; tempJson size=%d\n;", sizeof(buff)+20, sizeof(char));
+	//printf("size of testStruct = %d\n;char size=%d;\n; tempJson size=%d\n;", sizeof(buff)+20, sizeof(char));
 
 	//copy structs data to buff
 	//bzero(&buff,0);
