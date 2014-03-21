@@ -78,7 +78,7 @@ int main(){
   int len;
   int fileSize;//File size of received;
   int recvSize=0; // Number show how much bytes has been recevied; 23Bytes in 78Bytes;
-  char buf[1514];
+  char buf[8192];
   char filename[100];
   struct sockaddr_in dr;
 
@@ -420,27 +420,45 @@ if(fork()==0){
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-	      int  ffd=open("/home/charmyin/hello.h264", O_RDWR|O_CREAT, 0666);
+	      int  ffd=open("/home/charmyin/hello3.h264", O_RDWR|O_CREAT, 0666);
+	      int  logffd=open("/home/charmyin/hello3.log", O_RDWR|O_CREAT, 0666);
 
 	       float j=0;
 	       ////异常处理
 	       int i=1;
-	       //循环接收文件数据
 
-	       while(i<1000){
-	     	  r=recv(sfd2, buf, 1514, MSG_WAITALL);
+	       //循环接收文件数据
+	       receiveSocketStruct(&returnStruct, sfd2);
+	       unsigned char buffVideo1[returnStruct.jsonSize];
+	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
+	       write(ffd, buffVideo1,  returnStruct.jsonSize);
+	       while(i<6000){
+	    	  receiveSocketStruct(&returnStruct, sfd2);
+	     	  r=recv(sfd2, buf, 8192, MSG_WAITALL);
 	     	 // printf(" %\n", buf);
-	     	 write(ffd, buf, 1514);
+	     	 write(ffd, buf, 8192);
+	     	 write(logffd,&returnStruct.firstInt , 4);
+	     	write(logffd,&returnStruct.secondInt , 4);
+	     	write(logffd,&returnStruct.thirdInt , 4);
+	     	write(logffd,&returnStruct.fourthInt , 4);
+	     	write(logffd,&returnStruct.jsonSize, 4);
+
 	     	/*  if(r==-1){
 	     		  printf("Receive wrong~%d\n", i);
 	     		  break;
 	     	  }*/
+
+	     	if(i%100==0){
+	     		printf("%000d\n", i);
+	     	}
 	     	  i++;
 	     	  //if(i==2)
 	     		//  break;
 	       }
 	       fflush(stdout);
 	       close(ffd);
+	  	   close(logffd);
+	  	   exit(0);
 	       /*while(1){
 	         r=recv(cfd, &len, sizeof(len), MSG_WAITALL);
 	         if(len==0){
