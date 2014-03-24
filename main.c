@@ -420,8 +420,8 @@ if(fork()==0){
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-	      int  ffd=open("/home/charmyin/hello4.h264", O_RDWR|O_CREAT, 0666);
-	      int  logffd=open("/home/charmyin/hello4.log", O_RDWR|O_CREAT, 0666);
+	      int  ffd=open("/home/charmyin/hello16.h264", O_RDWR|O_CREAT, 0666);
+	      int  logffd=open("/home/charmyin/hello16.log", O_RDWR|O_CREAT, 0666);
 
 	       float j=0;
 	       ////异常处理
@@ -437,19 +437,24 @@ if(fork()==0){
 	    	    receiveSocketStruct(&returnStruct, sfd2);
 	    	    for(count=0; count<8; count++){
 					r=recv(sfd2, buf, 1024, MSG_WAITALL);
+					  if(r==-1){
+						  printf("Receive wrong~%d\n", i);
+						  break;
+					  }
 					 // printf(" %\n", buf);
 					 write(ffd, buf, 1024);
 	    	    }
+	    	    if(r==-1){
+					  printf("Receive wrong~%d\n", i);
+					  break;
+				  }
 				write(logffd,&returnStruct.firstInt , 4);
 				write(logffd,&returnStruct.secondInt , 4);
 				write(logffd,&returnStruct.thirdInt , 4);
 				write(logffd,&returnStruct.fourthInt , 4);
 				write(logffd,&returnStruct.jsonSize, 4);
-				/*  if(r==-1){
-					  printf("Receive wrong~%d\n", i);
-					  break;
-				  }*/
-				printf("%000d%000d%000d%000d\n", returnStruct.firstInt , returnStruct.secondInt, returnStruct.thirdInt , returnStruct.fourthInt);
+
+				//printf("%000d%000d%000d%000d--%d\n", returnStruct.firstInt , returnStruct.secondInt, returnStruct.thirdInt , returnStruct.fourthInt, r);
 				bzero(&returnStruct.firstInt ,4);
 				bzero(&returnStruct.secondInt ,4);
 				bzero(&returnStruct.thirdInt ,4);
@@ -552,6 +557,52 @@ if(fork()==0){
 	  	  }
 	  	  printf("Received string OPMonitorMain parent is : %s\n", buff9);
 	  	  printf("This is parent\n");*/
+
+	  while(1){
+		  sleep(5);
+		  	secondStruct.firstInt=0x000000ff;
+			//r=send(sfd, &testStruct.firstInt, 4, 0);
+			secondStruct.secondInt=sessionIDNum;
+			//r=send(sfd, &testStruct.secondInt, 4, 0);
+			secondStruct.thirdInt=0x0;
+			//r=send(sfd, &testStruct.thirdInt, 4, 0);
+			secondStruct.fourthInt=0x03ee0000;
+			//r=send(sfd, &testStruct.fourthInt, 4, 0);
+
+			//free(tempJson);
+		//  	cJSON *jsonKeepalive, *jsonSessionIDKeepalive;
+
+			//char *tempKeepaliveJson = "{ \"Name\" : \"KeepAlive\", \"SessionID\" : \"0x00000040\" }\n";
+
+			//Pay the value to send json
+			jsonKeepalive= cJSON_Parse(tempKeepaliveJson);
+			jsonSessionIDKeepalive = cJSON_GetObjectItem(jsonKeepalive, "SessionID");
+			jsonSessionIDKeepalive->valuestring=malloc(sizeof(sessionID));
+			strcpy(jsonSessionIDKeepalive->valuestring,sessionID);
+
+			requestKeepAliveString=cJSON_PrintUnformatted(jsonKeepalive);
+
+			printf("Send KeepAlive ----------- again  ----------%s\n",requestKeepAliveString);
+
+			//Release json obj
+			cJSON_Delete(jsonKeepalive);
+			//cJSON_Delete(jsonSessionIDKeepalive);
+
+			//send prepared data to ipc
+			if(sendSocketData(secondStruct, requestKeepAliveString, sfd)==-1){
+				printf("Something has wrong on Sending KeepAlive~");
+				return 0;
+			}
+
+			//Receive the channel info and so on
+		   receiveSocketStruct(&returnStruct, sfd);
+		   unsigned char buff3[returnStruct.jsonSize];
+		   if(receiveSocketJson(returnStruct.jsonSize, buff3, sfd)==-1){
+			  printf("Something has wrong on Receiving first data~");
+			  return 0;
+		   }
+		   printf("Received string KeepAlive is : %s\n", buff3);
+	  }
 
 	  int *status;
 	  wait(status);
