@@ -420,8 +420,8 @@ if(fork()==0){
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-	      int  ffd=open("/home/charmyin/hello16.h264", O_RDWR|O_CREAT, 0666);
-	      int  logffd=open("/home/charmyin/hello16.log", O_RDWR|O_CREAT, 0666);
+	      int  ffd=open("/home/charmyin/hello19.h264", O_RDWR|O_CREAT, 0666);
+	      int  logffd=open("/home/charmyin/hello19.log", O_RDWR|O_CREAT, 0666);
 
 	       float j=0;
 	       ////异常处理
@@ -430,20 +430,32 @@ if(fork()==0){
 
 	       //循环接收文件数据
 	       receiveSocketStruct(&returnStruct, sfd2);
+
+
 	       unsigned char buffVideo1[returnStruct.jsonSize];
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
 	       write(ffd, buffVideo1,  returnStruct.jsonSize);
-	       while(i<6000){
+	       while(i<3000){
 	    	    receiveSocketStruct(&returnStruct, sfd2);
-	    	    for(count=0; count<8; count++){
-					r=recv(sfd2, buf, 1024, MSG_WAITALL);
+	    	    unsigned char buffVideo2[returnStruct.jsonSize];
+					r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
 					  if(r==-1){
 						  printf("Receive wrong~%d\n", i);
 						  break;
 					  }
+					  if(returnStruct.jsonSize==0xf91f){
+									printf("0h no 1111111111111111111111111111111111~~~~~~~~~~~~~~~~~~~~~~~~%08x\n", returnStruct.jsonSize);
+									return;
+									//continue;
+						}
+					  if(returnStruct.firstInt!=0x1ff){
+									printf("0h no oooooooooooooooooooooooooo~~~~~~~~~~~~~~~~~~~~~~~~%08x-----%08x\n", returnStruct.firstInt, returnStruct.jsonSize);
+									//return;
+						}else{
+								   printf("0h yes sssssssssssssssssssssss~~~~~~~~~~~~~~~~~~~~~~~~%08x----%08x\n", returnStruct.firstInt, returnStruct.jsonSize);
+						}
 					 // printf(" %\n", buf);
-					 write(ffd, buf, 1024);
-	    	    }
+					 write(ffd, buffVideo2, returnStruct.jsonSize);
 	    	    if(r==-1){
 					  printf("Receive wrong~%d\n", i);
 					  break;
@@ -459,9 +471,10 @@ if(fork()==0){
 				bzero(&returnStruct.secondInt ,4);
 				bzero(&returnStruct.thirdInt ,4);
 				bzero(&returnStruct.fourthInt ,4);
-				/*if(i%100==0){
+
+				if(i%100==0){
 					printf("%000d\n", i);
-				}*/
+				}
 				  i++;
 				  //if(i==2)
 					//  break;
