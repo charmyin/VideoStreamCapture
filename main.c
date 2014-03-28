@@ -41,25 +41,15 @@ int sendSocketData(struct tcpRequire headData, char *jsonData, int sfd){
 
 int receiveSocketStruct(struct tcpRequire *returnStruct, int sfd){
 	  int r;
-	//unsigned char returnedBuff[20];
 	  struct tcpRequire tempStruct;
 	  r=recv(sfd, &(returnStruct->firstInt) ,4, MSG_WAITALL);
-	 // printf("&returnStruct->firstInt is %08x;\n", tempStruct.firstInt);
 	  r=recv(sfd, &(returnStruct->secondInt) ,4, MSG_WAITALL);
-	  //printf("&returnStruct->secondInt is %08x;\n", tempStruct.secondInt);
 	  r=recv(sfd, &(returnStruct->thirdInt) ,4, MSG_WAITALL);
-	  //printf("&returnStruct->thirdInt is %08x;\n", tempStruct.thirdInt);
 	  r=recv(sfd, &(returnStruct->fourthInt) ,4, MSG_WAITALL);
-	  //printf("&returnStruct->fourthInt is %08x;\n", tempStruct.fourthInt);
 	  r=recv(sfd, &(returnStruct->jsonSize) ,4, MSG_WAITALL);
-	 //printf("&returnStruct->fifthInt is %08x;\n", tempStruct.jsonSize);
-	  //unsigned char bufftemp[returnStruct.jsonSize];
-	 // memcpy(returnStruct, &tempStruct, sizeof(tempStruct));
-	  //printf("sizeof char=%08x;%08x;%08x;%08x;%08x;\n", returnStruct.firstInt,returnStruct.secondInt,returnStruct.thirdInt,returnStruct.fourthInt,returnStruct.jsonSize);
-	/*  r=recv(sfd, buff ,returnStruct->jsonSize, MSG_WAITALL);
-	  memcpy(buff, tempBuff, sizeof(tempBuff));*/
 	  return r;
 }
+
 //Get json data after struct data
 //size: size of json string data
 //buff: json string data
@@ -107,13 +97,9 @@ int main(){
    //prepare struct data
   	struct tcpRequire testStruct;
   	testStruct.firstInt=0x000000ff;
-  	//r=send(sfd, &testStruct.firstInt, 4, 0);
   	testStruct.secondInt=0x00000000;
-  	//r=send(sfd, &testStruct.secondInt, 4, 0);
   	testStruct.thirdInt=0x0;
-  	//r=send(sfd, &testStruct.thirdInt, 4, 0);
   	testStruct.fourthInt=0x03e80000;
-  	//r=send(sfd, &testStruct.fourthInt, 4, 0);
 
   	char tempJson[] = "{ \"EncryptType\" : \"MD5\", \"LoginType\" : \"DVRIPWeb\", \"PassWord\" : \"6QNMIQGe\", \"UserName\" : \"admin\" }\n";
   	//send prepared data to ipc
@@ -131,11 +117,8 @@ int main(){
 	printf("Something has wrong on Receiving first data~");
 	return 0;
   }
- // free(buff);
 
-  //printf("size of returned data: %d\n",returnStruct.jsonSize);
   int countBuff;
-  //for(countBuff=0; countBuff<128; countBuff++)
  printf("Received %d string is : %s;\n", countBuff, buff);
 
   // Get SessionID
@@ -150,8 +133,6 @@ int main(){
     int sessionIDNum;
 	sscanf(sessionID, "%x", &sessionIDNum);
 
-  //r=connect(sfd, (struct sockaddr*)&dr, sizeof(dr));
-
 /************************************Send Name SystemInfo*******************************************/
 
     //prepare struct data to request data
@@ -162,7 +143,6 @@ int main(){
 	secondStruct.fourthInt=0x03fc0000;
 
 	cJSON *jsonDst, *jsonSessionIDObjDst;
-	//free(tempJson);
   	char *tempDstJson = "{ \"Name\" : \"SystemInfo\", \"SessionID\" : \"0x00000040\" }\n";
 
   	//Pay the value to send json
@@ -178,7 +158,6 @@ int main(){
 	//Release json obj
 	cJSON_Delete(json);
 	cJSON_Delete(jsonDst);
-
 
 	//send prepared data to ipc
 	if(sendSocketData(secondStruct, requestString, sfd)==-1){
@@ -198,15 +177,10 @@ int main(){
   	/************************************Send KeepAlive*******************************************/
 
   	secondStruct.firstInt=0x000000ff;
-	//r=send(sfd, &testStruct.firstInt, 4, 0);
 	secondStruct.secondInt=sessionIDNum;
-	//r=send(sfd, &testStruct.secondInt, 4, 0);
 	secondStruct.thirdInt=0x0;
-	//r=send(sfd, &testStruct.thirdInt, 4, 0);
 	secondStruct.fourthInt=0x03ee0000;
-	//r=send(sfd, &testStruct.fourthInt, 4, 0);
 
-	//free(tempJson);
   	cJSON *jsonKeepalive, *jsonSessionIDKeepalive;
 
 	char *tempKeepaliveJson = "{ \"Name\" : \"KeepAlive\", \"SessionID\" : \"0x00000040\" }\n";
@@ -223,7 +197,6 @@ int main(){
 
 	//Release json obj
 	cJSON_Delete(jsonKeepalive);
-	//cJSON_Delete(jsonSessionIDKeepalive);
 
 	//send prepared data to ipc
 	if(sendSocketData(secondStruct, requestKeepAliveString, sfd)==-1){
@@ -248,7 +221,7 @@ int main(){
 	secondStruct.thirdInt=0x00000001;
 	secondStruct.fourthInt=0x06360000;
 
-  	cJSON *jsonSetTime, *jsonSessionIDSetTime;//, *jsonOPTimeSettingNoRTCSetTime;
+  	cJSON *jsonSetTime, *jsonSessionIDSetTime, *jsonOPTimeSettingNoRTCSetTime;
   	char * formatRealTime = now();
 
 	char *tempSetTimeJson = "{ \"Name\" : \"OPTimeSettingNoRTC\", \"OPTimeSettingNoRTC\" : \"20140313 08:03:07\", \"SessionID\" : \"0x89\" }\n";
@@ -258,12 +231,11 @@ int main(){
 	jsonSessionIDSetTime = cJSON_GetObjectItem(jsonSetTime, "SessionID");
 	jsonSessionIDSetTime->valuestring = malloc(sizeof(sessionID));
 	strcpy(jsonSessionIDSetTime->valuestring,sessionID);
-	//jsonSessionIDSetTime->valuestring=sessionID;
 
-/*	jsonOPTimeSettingNoRTCSetTime = cJSON_GetObjectItem(jsonSetTime, "OPTimeSettingNoRTC");
-	jsonOPTimeSettingNoRTCSetTime->valuestring = malloc(sizeof(formatRealTime));
-	strcpy(jsonOPTimeSettingNoRTCSetTime->valuestring,formatRealTime);*/
-	//jsonOPTimeSettingNoRTCSetTime->valuestring=formatRealTime;
+	jsonOPTimeSettingNoRTCSetTime = cJSON_GetObjectItem(jsonSetTime, "OPTimeSettingNoRTC");
+	printf("size of now ===== %d\n", strlen( formatRealTime));
+	jsonOPTimeSettingNoRTCSetTime->valuestring = malloc(strlen(formatRealTime));
+	strcpy(jsonOPTimeSettingNoRTCSetTime->valuestring,formatRealTime);
 
 	char *requestSetTimeString=cJSON_PrintUnformatted(jsonSetTime);
 
@@ -339,20 +311,9 @@ int main(){
 
   printf("Received string Last 2 is : %s\n", buff5);
 
-
-/*	//Receive the last info
-receiveSocketStruct(&returnStruct, sfd);
-unsigned char buff7[returnStruct.jsonSize];
-if(receiveSocketJson(returnStruct.jsonSize, buff7, sfd)==-1){
-	  printf("Something has wrong on Receiving first data~");
-	  return 0;
-}*/
-
-//printf("Received string Last 3 is : %s\n", buff7);
-
-
+//Create thread to receive video stream
 if(fork()==0){
-
+	//socket 2 used for receving avc stream(.h264)
       int sfd2;
 	  struct sockaddr_in dr2;
 
@@ -375,13 +336,9 @@ if(fork()==0){
 	  printf("Second connect绑定地址成功!\n");
 	  /************************************Send OPMonitor in child process*******************************************/
 	    secondStruct.firstInt=0x000000ff;
-	   	//r=send(sfd, &testStruct.firstInt, 4, 0);
 	   	secondStruct.secondInt=sessionIDNum;
-	   	//r=send(sfd, &testStruct.secondInt, 4, 0);
 	   	secondStruct.thirdInt=0x0;
-	   	//r=send(sfd, &testStruct.thirdInt, 4, 0);
 	   	secondStruct.fourthInt=0x05850000;
-	   	//r=send(sfd, &testStruct.fourthInt, 4, 0);
 
 	   	char *OPMonitorJsonString = "{ \"Name\" : \"OPMonitor\", \"OPMonitor\" : { \"Action\" : \"Claim\", \"Parameter\" : { \"Channel\" : 0, \"CombinMode\" : \"NONE\", \"StreamType\" : \"Main\", \"TransMode\" : \"TCP\" } }, \"SessionID\" : \"0x43\" }\n";
 
@@ -399,8 +356,6 @@ if(fork()==0){
 
 		//Release json obj
 		cJSON_Delete(jsonOPMonitor);
-
-	   	//printf("Send OPMonitor in child process %s\n",OPMonitorJsonString);
 
 	   	//send prepared data to ipc
 	   	if(sendSocketData(secondStruct, requestSessionIDOPMonitor, sfd2)==-1){
@@ -420,10 +375,7 @@ if(fork()==0){
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-          int  ffd=open("/home/media/dkapm1/hello4.h264", O_RDWR|O_CREAT, 0666);
-    	  int  logffd=open("/home/media/dkapm1/hello4.log", O_RDWR|O_CREAT, 0666);
-	      int  wholeffd=open("/home/media/dkapm1/hello4.whole", O_RDWR|O_CREAT, 0666);
-
+          int  ffd=open("/home/media/dkapm1/hello7.h264", O_RDWR|O_CREAT, 0666);
 	       float j=0;
 	       ////异常处理
 	       int i=1;
@@ -432,110 +384,27 @@ if(fork()==0){
 	       //循环接收文件数据
 	       receiveSocketStruct(&returnStruct, sfd2);
 
-
 	       unsigned char buffVideo1[returnStruct.jsonSize];
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
 	       write(ffd, buffVideo1,  returnStruct.jsonSize);
 
 	       while(1){
 	    	    receiveSocketStruct(&returnStruct, sfd2);
-
-	    	    /*write(wholeffd,&returnStruct.firstInt , 4);
-				write(wholeffd,&returnStruct.secondInt , 4);
-				write(wholeffd,&returnStruct.thirdInt , 4);
-				write(wholeffd,&returnStruct.fourthInt , 4);
-				write(wholeffd,&returnStruct.jsonSize, 4);*/
-
 	    	    unsigned char buffVideo2[returnStruct.jsonSize];
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
-				    /*if(r==-1){
-					    printf("Receive wrong~%d\n", i);
-					    break;
-				    }*/
-					//  printf("0h no 1111111111111111111111111111111111~~~~~~~~~~~~~~~~~~~~~~~~%08x\n", returnStruct.jsonSize);
-					  /*if(returnStruct.jsonSize==0xf91f){
-									printf("0h no 1111111111111111111111111111111111~~~~~~~~~~~~~~~~~~~~~~~~%08x\n", returnStruct.jsonSize);
-									return;
-									//continue;
-						}
-					  if(returnStruct.firstInt!=0x1ff){
-									printf("0h no oooooooooooooooooooooooooo~~~~~~~~~~~~~~~~~~~~~~~~%08x-----%08x\n", returnStruct.firstInt, returnStruct.jsonSize);
-									//return;
-						}else{
-								   printf("0h yes sssssssssssssssssssssss~~~~~~~~~~~~~~~~~~~~~~~~%08x----%08x\n", returnStruct.firstInt, returnStruct.jsonSize);
-						}*/
-					 // printf(" %\n", buf);
-					 //write(wholeffd, buffVideo1,  returnStruct.jsonSize);
-					 write(ffd, buffVideo2, returnStruct.jsonSize);
-	    	    /*if(r==-1){
-					  printf("Receive wrong~%d\n", i);
-					  break;
-				  }*/
-
-				/*write(logffd,&returnStruct.firstInt , 4);
-				write(logffd,&returnStruct.secondInt , 4);
-				write(logffd,&returnStruct.thirdInt , 4);
-				write(logffd,&returnStruct.fourthInt , 4);
-				write(logffd,&returnStruct.jsonSize, 4);*/
-
-				//printf("%000d%000d%000d%000d--%d\n", returnStruct.firstInt , returnStruct.secondInt, returnStruct.thirdInt , returnStruct.fourthInt, r);
-			/*	bzero(&returnStruct.firstInt ,4);
-				bzero(&returnStruct.secondInt ,4);
-				bzero(&returnStruct.thirdInt ,4);
-				bzero(&returnStruct.fourthInt ,4);*/
-			/*	 if(returnStruct.jsonSize !=0x2000){
-					  return;
-				 }*/
-
-				/*if(i%100==0){
-					printf("%000d\n", i);
-				}*/
-				//  i++;
-				  //if(i==2)
-					//  break;
+				 write(ffd, buffVideo2, returnStruct.jsonSize);
 	       }
 	       fflush(stdout);
 	       close(ffd);
-	  	   close(logffd);
 	  	   exit(0);
-	       /*while(1){
-	         r=recv(cfd, &len, sizeof(len), MSG_WAITALL);
-	         if(len==0){
-	           break;
-	         }
-	         r=recv(cfd, buf, len, MSG_WAITALL);
-
-	         write(ffd, buf, len);
-	         recvSize+=len;
-	         float j=((float)recvSize)*100/fileSize;
-
-	         //printf the percentage progress: 87%;
-	         if((int)j!=(int)i){
-	     //    	printf("recvSize=%d;\n",recvSize);
-	     //    	printf("i=%.0f; j=%.0f \n;", i, j);
-	         	i=j;
-	     		putchar('\b');
-	     		putchar('\b');
-	     		putchar('\b');
-	     		putchar('\b');
-	     		printf("%3d%%",(int)j);
-	     		fflush(stdout);
-	         }
-	       }*/
-	     /*  close(ffd);*/
 
   }else{
 	  sleep(1);
-	  printf("-------------------------------------------\n");
-	  /************************************Send OPMonitor in parent  process*******************************************/
+	 /************************************Send OPMonitor in parent  process*******************************************/
 	secondStruct.firstInt=0x000000ff;
-	//r=send(sfd, &testStruct.firstInt, 4, 0);
 	secondStruct.secondInt=sessionIDNum;
-	//r=send(sfd, &testStruct.secondInt, 4, 0);
 	secondStruct.thirdInt=0x0;
-	//r=send(sfd, &testStruct.thirdInt, 4, 0);
 	secondStruct.fourthInt=0x05820000;
-	//r=send(sfd, &testStruct.fourthInt, 4, 0);
 
 	char *OPMonitorJsonStringMain = "{ \"Name\" : \"OPMonitor\", \"OPMonitor\" : { \"Action\" : \"Start\", \"Parameter\" : { \"Channel\" : 0, \"CombinMode\" : \"NONE\", \"StreamType\" : \"Main\", \"TransMode\" : \"TCP\" } }, \"SessionID\" : \"0x43\" }\n";
 
@@ -553,9 +422,6 @@ if(fork()==0){
 
 	//Release json obj
 	cJSON_Delete(jsonOPMonitorMain);
-
-	//printf("Send OPMonitor in child process %s\n",OPMonitorJsonString);
-
 	//send prepared data to ipc
 	if(sendSocketData(secondStruct, requestSessionIDOPMonitorMain, sfd)==-1){
 		printf("Something has wrong on Sending father OPMonitor~");
@@ -574,33 +440,13 @@ if(fork()==0){
 	  }
 
 	  printf("Received string OPMonitorMain parent is : %s\n", buff8);
-	  /*printf("This is parent\n");
-	  printf("Parent receive 2:\n");
-	  //Receive the channel info and so on
-	  	  receiveSocketStruct(&returnStruct, sfd);
-	  	  unsigned char buff9[returnStruct.jsonSize];
-	  	  if(receiveSocketJson(returnStruct.jsonSize, buff9, sfd)==-1){
-	  		  printf("Something has wrong on Receiving first data OPMonitor~");
-	  		  return 0;
-	  	  }
-	  	  printf("Received string OPMonitorMain parent is : %s\n", buff9);
-	  	  printf("This is parent\n");*/
 
 	  while(1){
 		  sleep(20);
 		  	secondStruct.firstInt=0x000000ff;
-			//r=send(sfd, &testStruct.firstInt, 4, 0);
 			secondStruct.secondInt=sessionIDNum;
-			//r=send(sfd, &testStruct.secondInt, 4, 0);
 			secondStruct.thirdInt=0x0;
-			//r=send(sfd, &testStruct.thirdInt, 4, 0);
 			secondStruct.fourthInt=0x03ee0000;
-			//r=send(sfd, &testStruct.fourthInt, 4, 0);
-
-			//free(tempJson);
-		//  	cJSON *jsonKeepalive, *jsonSessionIDKeepalive;
-
-			//char *tempKeepaliveJson = "{ \"Name\" : \"KeepAlive\", \"SessionID\" : \"0x00000040\" }\n";
 
 			//Pay the value to send json
 			jsonKeepalive= cJSON_Parse(tempKeepaliveJson);
@@ -614,7 +460,6 @@ if(fork()==0){
 
 			//Release json obj
 			cJSON_Delete(jsonKeepalive);
-			//cJSON_Delete(jsonSessionIDKeepalive);
 
 			//send prepared data to ipc
 			if(sendSocketData(secondStruct, requestKeepAliveString, sfd)==-1){
