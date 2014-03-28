@@ -248,7 +248,7 @@ int main(){
 	secondStruct.thirdInt=0x00000001;
 	secondStruct.fourthInt=0x06360000;
 
-  	cJSON *jsonSetTime, *jsonSessionIDSetTime, *jsonOPTimeSettingNoRTCSetTime;
+  	cJSON *jsonSetTime, *jsonSessionIDSetTime;//, *jsonOPTimeSettingNoRTCSetTime;
   	char * formatRealTime = now();
 
 	char *tempSetTimeJson = "{ \"Name\" : \"OPTimeSettingNoRTC\", \"OPTimeSettingNoRTC\" : \"20140313 08:03:07\", \"SessionID\" : \"0x89\" }\n";
@@ -260,9 +260,9 @@ int main(){
 	strcpy(jsonSessionIDSetTime->valuestring,sessionID);
 	//jsonSessionIDSetTime->valuestring=sessionID;
 
-	jsonOPTimeSettingNoRTCSetTime = cJSON_GetObjectItem(jsonSetTime, "OPTimeSettingNoRTC");
+/*	jsonOPTimeSettingNoRTCSetTime = cJSON_GetObjectItem(jsonSetTime, "OPTimeSettingNoRTC");
 	jsonOPTimeSettingNoRTCSetTime->valuestring = malloc(sizeof(formatRealTime));
-	strcpy(jsonOPTimeSettingNoRTCSetTime->valuestring,formatRealTime);
+	strcpy(jsonOPTimeSettingNoRTCSetTime->valuestring,formatRealTime);*/
 	//jsonOPTimeSettingNoRTCSetTime->valuestring=formatRealTime;
 
 	char *requestSetTimeString=cJSON_PrintUnformatted(jsonSetTime);
@@ -413,15 +413,16 @@ if(fork()==0){
 	      receiveSocketStruct(&returnStruct, sfd2);
 	      unsigned char buff6[returnStruct.jsonSize];
 	      if(receiveSocketJson(returnStruct.jsonSize, buff6, sfd2)==-1){
-	   	  printf("Something has wrong on Receiving first data child OPMonitor~");
-	   	  return 0;
+			  printf("Something has wrong on Receiving first data child OPMonitor~");
+			  return 0;
 	      }
 
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-	      int  ffd=open("/home/charmyin/hello16.h264", O_RDWR|O_CREAT, 0666);
-	      int  logffd=open("/home/charmyin/hello16.log", O_RDWR|O_CREAT, 0666);
+          int  ffd=open("/home/media/dkapm1/hello4.h264", O_RDWR|O_CREAT, 0666);
+    	  int  logffd=open("/home/media/dkapm1/hello4.log", O_RDWR|O_CREAT, 0666);
+	      int  wholeffd=open("/home/media/dkapm1/hello4.whole", O_RDWR|O_CREAT, 0666);
 
 	       float j=0;
 	       ////异常处理
@@ -430,39 +431,66 @@ if(fork()==0){
 
 	       //循环接收文件数据
 	       receiveSocketStruct(&returnStruct, sfd2);
+
+
 	       unsigned char buffVideo1[returnStruct.jsonSize];
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
 	       write(ffd, buffVideo1,  returnStruct.jsonSize);
-	       while(i<6000){
+
+	       while(1){
 	    	    receiveSocketStruct(&returnStruct, sfd2);
-	    	    for(count=0; count<8; count++){
-					r=recv(sfd2, buf, 1024, MSG_WAITALL);
-					  if(r==-1){
-						  printf("Receive wrong~%d\n", i);
-						  break;
-					  }
+
+	    	    /*write(wholeffd,&returnStruct.firstInt , 4);
+				write(wholeffd,&returnStruct.secondInt , 4);
+				write(wholeffd,&returnStruct.thirdInt , 4);
+				write(wholeffd,&returnStruct.fourthInt , 4);
+				write(wholeffd,&returnStruct.jsonSize, 4);*/
+
+	    	    unsigned char buffVideo2[returnStruct.jsonSize];
+				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
+				    /*if(r==-1){
+					    printf("Receive wrong~%d\n", i);
+					    break;
+				    }*/
+					//  printf("0h no 1111111111111111111111111111111111~~~~~~~~~~~~~~~~~~~~~~~~%08x\n", returnStruct.jsonSize);
+					  /*if(returnStruct.jsonSize==0xf91f){
+									printf("0h no 1111111111111111111111111111111111~~~~~~~~~~~~~~~~~~~~~~~~%08x\n", returnStruct.jsonSize);
+									return;
+									//continue;
+						}
+					  if(returnStruct.firstInt!=0x1ff){
+									printf("0h no oooooooooooooooooooooooooo~~~~~~~~~~~~~~~~~~~~~~~~%08x-----%08x\n", returnStruct.firstInt, returnStruct.jsonSize);
+									//return;
+						}else{
+								   printf("0h yes sssssssssssssssssssssss~~~~~~~~~~~~~~~~~~~~~~~~%08x----%08x\n", returnStruct.firstInt, returnStruct.jsonSize);
+						}*/
 					 // printf(" %\n", buf);
-					 write(ffd, buf, 1024);
-	    	    }
-	    	    if(r==-1){
+					 //write(wholeffd, buffVideo1,  returnStruct.jsonSize);
+					 write(ffd, buffVideo2, returnStruct.jsonSize);
+	    	    /*if(r==-1){
 					  printf("Receive wrong~%d\n", i);
 					  break;
-				  }
-				write(logffd,&returnStruct.firstInt , 4);
+				  }*/
+
+				/*write(logffd,&returnStruct.firstInt , 4);
 				write(logffd,&returnStruct.secondInt , 4);
 				write(logffd,&returnStruct.thirdInt , 4);
 				write(logffd,&returnStruct.fourthInt , 4);
-				write(logffd,&returnStruct.jsonSize, 4);
+				write(logffd,&returnStruct.jsonSize, 4);*/
 
 				//printf("%000d%000d%000d%000d--%d\n", returnStruct.firstInt , returnStruct.secondInt, returnStruct.thirdInt , returnStruct.fourthInt, r);
-				bzero(&returnStruct.firstInt ,4);
+			/*	bzero(&returnStruct.firstInt ,4);
 				bzero(&returnStruct.secondInt ,4);
 				bzero(&returnStruct.thirdInt ,4);
-				bzero(&returnStruct.fourthInt ,4);
+				bzero(&returnStruct.fourthInt ,4);*/
+			/*	 if(returnStruct.jsonSize !=0x2000){
+					  return;
+				 }*/
+
 				/*if(i%100==0){
 					printf("%000d\n", i);
 				}*/
-				  i++;
+				//  i++;
 				  //if(i==2)
 					//  break;
 	       }
@@ -559,7 +587,7 @@ if(fork()==0){
 	  	  printf("This is parent\n");*/
 
 	  while(1){
-		  sleep(5);
+		  sleep(20);
 		  	secondStruct.firstInt=0x000000ff;
 			//r=send(sfd, &testStruct.firstInt, 4, 0);
 			secondStruct.secondInt=sessionIDNum;
