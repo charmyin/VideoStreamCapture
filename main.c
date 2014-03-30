@@ -375,8 +375,19 @@ if(fork()==0){
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-          int  ffd=open("/home/media/dkapm1/hello7.h264", O_RDWR|O_CREAT, 0666);
-	       float j=0;
+         // int  ffd=open("/home/media/dkapm1/hello13.h264", O_RDWR|O_CREAT, 0666);
+         // remove("/tmp/ipcfifo0");
+          //int fifocode=mkfifo("/tmp/ipcfifo0", 0666);
+          /*if(fifocode==-1){
+        	  perror("mkfifo ERROR~ \n");
+        	  exit(0);
+          }*/
+          int fifoffd=open("/tmp/ipcfifo0",O_WRONLY);
+          
+          if(fifoffd==-1){
+			  perror("Open fifo ERROR~ \n");
+			  exit(0);
+			}
 	       ////异常处理
 	       int i=1;
 	       int count;
@@ -386,16 +397,25 @@ if(fork()==0){
 
 	       unsigned char buffVideo1[returnStruct.jsonSize];
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
-	       write(ffd, buffVideo1,  returnStruct.jsonSize);
-
+	       //write(ffd, buffVideo1,  returnStruct.jsonSize);
+	       write(fifoffd, buffVideo1, returnStruct.jsonSize);
 	       while(1){
 	    	    receiveSocketStruct(&returnStruct, sfd2);
 	    	    unsigned char buffVideo2[returnStruct.jsonSize];
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
-				 write(ffd, buffVideo2, returnStruct.jsonSize);
+
+				//write(ffd, buffVideo2, returnStruct.jsonSize);
+				write(fifoffd, buffVideo2, returnStruct.jsonSize);
+				//write(fifoffd, "Hello\n", strlen("hello\n"));
+				if(i%120==0){
+					printf("Printed %d~\n", i);
+					i=0;
+				}
+				 i++;
 	       }
 	       fflush(stdout);
-	       close(ffd);
+	  //     close(ffd);
+	       close(fifoffd);
 	  	   exit(0);
 
   }else{
