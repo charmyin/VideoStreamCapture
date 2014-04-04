@@ -12,6 +12,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#define ipcIPAddr "192.168.109.18"
+#define ipcFIFOPath "/tmp/ipcfifo18"
 //Send socket data
 // headData: struts data, contains size of jsonData
 // jsonData: json string data, parameters upload
@@ -81,7 +83,7 @@ int main(){
 
   dr.sin_family=AF_INET;
   dr.sin_port=htons(34568);
-  dr.sin_addr.s_addr=inet_addr("192.168.109.15");
+  dr.sin_addr.s_addr=inet_addr(ipcIPAddr);
   r=connect(sfd, (struct sockaddr*)&dr, sizeof(dr));
   if(r==-1){
     printf("connect error: %m\n");
@@ -326,7 +328,7 @@ if(fork()==0){
 
 	  dr2.sin_family=AF_INET;
 	  dr2.sin_port=htons(34568);
-	  dr2.sin_addr.s_addr=inet_addr("192.168.109.15");
+	  dr2.sin_addr.s_addr=inet_addr(ipcIPAddr);
 	  r=connect(sfd2, (struct sockaddr*)&dr2, sizeof(dr2));
 	  if(r==-1){
 	    printf("Second connect error: %m\n");
@@ -375,16 +377,16 @@ if(fork()==0){
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
 	      //创建文件
-         // int  ffd=open("/home/media/dkapm1/hello13.h264", O_RDWR|O_CREAT, 0666);
-         // remove("/tmp/ipcfifo0");
-          //int fifocode=mkfifo("/tmp/ipcfifo0", 0666);
+        // int  ffd=open("/home/media/dkapm1/hello13.h264", O_RDWR|O_CREAT, 0666);
+         // remove("/tmp/ipcfifo15");
+          int fifocode=mkfifo(ipcFIFOPath, 0666);
           /*if(fifocode==-1){
         	  perror("mkfifo ERROR~ \n");
         	  exit(0);
           }*/
-          int fifoffd=open("/tmp/ipcfifo0",O_WRONLY);
+         int fifoffd=open(ipcFIFOPath,O_WRONLY);
           
-          if(fifoffd==-1){
+         if(fifoffd==-1){
 			  perror("Open fifo ERROR~ \n");
 			  exit(0);
 			}
@@ -405,7 +407,7 @@ if(fork()==0){
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
 
 				//write(ffd, buffVideo2, returnStruct.jsonSize);
-				write(fifoffd, buffVideo2, returnStruct.jsonSize);
+			        write(fifoffd, buffVideo2, returnStruct.jsonSize);
 				//write(fifoffd, "Hello\n", strlen("hello\n"));
 				if(i%120==0){
 					printf("Printed %d~\n", i);
@@ -414,7 +416,7 @@ if(fork()==0){
 				 i++;
 	       }
 	       fflush(stdout);
-	  //     close(ffd);
+	      // close(ffd);
 	       close(fifoffd);
 	  	   exit(0);
 
