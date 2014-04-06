@@ -57,7 +57,7 @@ do
 		(sudo mkdir -p $imageSaveMainDir${ipcConfigArray[0]}/$dateTimeIntervalIndex)
 		#2.start job
 		echo "sudo ${pipeProgramPath}main${ipcConfigArray[0]}"
-		(sudo ${pipeProgramPath}main${ipcConfigArray[0]} &)
+		(sudo ${pipeProgramPath}main${ipcConfigArray[0]})
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)
 		sleep 2
 		echo "sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/rgb%08d.jpg"
