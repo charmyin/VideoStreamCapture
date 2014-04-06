@@ -1,4 +1,5 @@
 #!/bin/bash
+#Author Charmyin
 ###########Auto run video capture program
 #Saved in directory like : /home/media/dkapm1/20140405-20140425-30
 #
@@ -9,14 +10,26 @@ pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
 imageSaveMainDir=/home/media/dkapm1/
 sudo mount /dev/sda1 $imageSaveMainDir
 
-i=0
-while read line; do
-#echo $line
-  if [[ -n "$line" ]]; then
-    ipcConfigLineArray[i]=${line}
-    ((i++))
-  fi
-done < ipcs.info
+if [[ -n "$1" ]]; then
+	while read line; do
+	#echo $line
+	  if [[ -n "$line" ]]; then
+	  	  if [ "$1" == "$line" ]; then
+		    ipcConfigLineArray[i]=${line}
+		  fi
+	  fi
+	done < ipcs.info
+else
+	i=0
+	while read line; do
+	#echo $line
+	  if [[ -n "$line" ]]; then
+	    ipcConfigLineArray[i]=${line}
+	    ((i++))
+	  fi
+	done < ipcs.info
+fi
+
 
 for ipcConfigLine in "${ipcConfigLineArray[@]}"
 do
@@ -57,11 +70,19 @@ do
 		(sudo mkdir -p $imageSaveMainDir${ipcConfigArray[0]}/$dateTimeIntervalIndex)
 		#2.start job
 		echo "sudo ${pipeProgramPath}main${ipcConfigArray[0]}"
-		(sudo ${pipeProgramPath}main${ipcConfigArray[0]} &)
+		(
+			#sudo ${pipeProgramPath}main${ipcConfigArray[0]} & 
+			#echo $! > ${pipeProgramPath}${ipcConfigArray[0]}.pids
+		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)
 		sleep 2
-		echo "sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/rgb%08d.jpg"
-		(sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/rgb%08d.jpg &)
+		countFile=($(ls -f ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/ | wc -l))
+		let "countFile=countFile-2"
+		echo "sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg"
+		(
+			#sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg &
+			#echo $! >> ${pipeProgramPath}${ipcConfigArray[0]}.pids
+		)
 	fi
 	#echo $dateTimeIntervalIndex
 	
@@ -70,7 +91,7 @@ do
 	#echo ${arr[2]}
     #(sudo ./main${arr[0]} &)
 	#sleep 2
-	#(sudo ffmpeg -f h264 -i /tmp/ipcfifo${arr[0]} -qscale:v 1 -f image2 -vf fps=fps=1/10 /home/media/dkapm1/${arr[0]}/rgb%08d.jpg &)
+	#(sudo ffmpeg -f h264 -i /tmp/ipcfifo${arr[0]} -qscale:v 1 -f image2 -vf fps=fps=1/10 /home/media/dkapm1/${arr[0]}/rgb%06d.jpg &)
 	
 done
 
