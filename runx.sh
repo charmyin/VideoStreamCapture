@@ -1,9 +1,10 @@
 #!/bin/bash
 #Author Charmyin
-###########Auto run video capture program
+###########Auto run video capture program############
 #Saved in directory like : /home/media/dkapm1/20140405-20140425-30
-#
-#test -e /dmtsai && echo "exist" || echo "Not exist"
+#Start all in ipcs.info : sudo ./runx.sh ; Start the specified ipc : sudo ./runx.sh 18  
+
+
 #Main app path
 pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
 #Main path to save the images
@@ -12,9 +13,9 @@ sudo mount /dev/sda1 $imageSaveMainDir
 
 if [[ -n "$1" ]]; then
 	while read line; do
-	#echo $line
 	  if [[ -n "$line" ]]; then
-	  	  if [ "$1" == "$line" ]; then
+	  ipcConfigArray0=($(echo $line | tr ";" "\n"))
+	  	  if [ "$1" == "${ipcConfigArray0[0]}" ]; then
 		    ipcConfigLineArray[i]=${line}
 		  fi
 	  fi
@@ -34,19 +35,19 @@ fi
 for ipcConfigLine in "${ipcConfigLineArray[@]}"
 do
 	#Get config file info
-	echo -e " \n-a--------$ipcConfigLine---b-----\n "
+	#echo -e " \n-a--------$ipcConfigLine---b-----\n "
 	ipcConfigArray=($(echo $ipcConfigLine | tr ";" "\n"))
 	######Find or create the save directory by the datetime of now##########
 	dateTimeNow=`date +%Y%m%d`
 	dateTimeIntervalArray=($(echo ${ipcConfigArray[2]} | tr "," "\n"))
-	#dateTime And Interval eg. 20140405-20140425-30
+	##dateTime And Interval eg. 20140405-20140425-30
 	dateTimeIntervalIndex=-1
-	#intreval between shooting two images
+	##intreval between shooting two images
 	imageShootInterval=10
 	for dateTimeInterval in "${dateTimeIntervalArray[@]}"
 	do
 	  dateTimeArray=($(echo $dateTimeInterval | tr "-" "\n"))
-	  echo "$dateTimeNow ${dateTimeArray[0]} $dateTimeNow ${dateTimeArray[1]}" 
+	  #echo "$dateTimeNow ${dateTimeArray[0]} $dateTimeNow ${dateTimeArray[1]}" 
 	  if [ "$dateTimeNow" -gt "${dateTimeArray[0]}" ] && [ "$dateTimeNow" -lt "${dateTimeArray[1]}" ]; then
 	 	 dateTimeIntervalIndex=$dateTimeInterval
 	 	 imageShootInterval=${dateTimeArray[2]}
@@ -71,8 +72,8 @@ do
 		#2.start job
 		echo "sudo ${pipeProgramPath}main${ipcConfigArray[0]}"
 		(
-			#sudo ${pipeProgramPath}main${ipcConfigArray[0]} & 
-			#echo $! > ${pipeProgramPath}${ipcConfigArray[0]}.pids
+			sudo ${pipeProgramPath}main${ipcConfigArray[0]} & 
+			echo $! > ${pipeProgramPath}${ipcConfigArray[0]}.pids
 		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)
 		sleep 2
@@ -80,19 +81,11 @@ do
 		let "countFile=countFile-2"
 		echo "sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg"
 		(
-			#sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg &
-			#echo $! >> ${pipeProgramPath}${ipcConfigArray[0]}.pids
+			sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg &
+			echo $! >> ${pipeProgramPath}${ipcConfigArray[0]}.pids
 		)
 	fi
 	#echo $dateTimeIntervalIndex
-	
-	#create a new directory
-	#(sudo mkdir -p /home/media/dkapm1/${arr[0]})
-	#echo ${arr[2]}
-    #(sudo ./main${arr[0]} &)
-	#sleep 2
-	#(sudo ffmpeg -f h264 -i /tmp/ipcfifo${arr[0]} -qscale:v 1 -f image2 -vf fps=fps=1/10 /home/media/dkapm1/${arr[0]}/rgb%06d.jpg &)
-	
 done
 
 #echo "total array elements: ${#ipcConfig[@]}"
