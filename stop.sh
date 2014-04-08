@@ -1,6 +1,10 @@
 #!/bin/bash
 #############Stop the running capture program progress###########
 ##----Parameter:ipid eg: ./stop.sh 15
+
+#Main app path
+pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
+
 echo $1
 i=0
 while read line; do
@@ -9,5 +13,7 @@ while read line; do
    sudo kill ${line}
     ((i++))
   fi
-done < $1.pids
+done < ${pipeProgramPath}/pids/$1.pids
+#remove the pids file
+sudo rm ${pipeProgramPath}/pids/$1.pids
 

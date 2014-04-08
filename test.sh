@@ -4,9 +4,7 @@
 echo $1
 hello=12223
 
-if [[ $1 == user1 ]] ; then
-	echo "--------" 
-fi
+sudo echo "hellodd" > /home/cubie/ttt.txt
 
 
 

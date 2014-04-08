@@ -7,15 +7,17 @@
 
 #Main app path
 pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
+
 #Main path to save the images
 imageSaveMainDir=/home/media/dkapm1/
+
 sudo mount /dev/sda1 $imageSaveMainDir
 
 if [[ -n "$1" ]]; then
 	while read line; do
 	  if [[ -n "$line" ]]; then
 	  ipcConfigArray0=($(echo $line | tr ";" "\n"))
-	  	  if [ "$1" == "${ipcConfigArray0[0]}" ]; then
+	  	  if [ "$1" = "${ipcConfigArray0[0]}" ]; then
 		    ipcConfigLineArray[i]=${line}
 		  fi
 	  fi
@@ -28,7 +30,7 @@ else
 	    ipcConfigLineArray[i]=${line}
 	    ((i++))
 	  fi
-	done < ipcs.info
+	done < ${pipeProgramPath}ipcs.info
 fi
 
 
@@ -73,7 +75,7 @@ do
 		echo "sudo ${pipeProgramPath}main${ipcConfigArray[0]}"
 		(
 			sudo ${pipeProgramPath}main${ipcConfigArray[0]} & 
-			echo $! > ${pipeProgramPath}${ipcConfigArray[0]}.pids
+			echo $! > ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
 		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)
 		sleep 2
@@ -82,7 +84,7 @@ do
 		echo "sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg"
 		(
 			sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg &
-			echo $! >> ${pipeProgramPath}${ipcConfigArray[0]}.pids
+			echo $! >> ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
 		)
 	fi
 	#echo $dateTimeIntervalIndex
