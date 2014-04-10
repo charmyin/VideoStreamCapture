@@ -3,7 +3,7 @@
 ######------Remove all the at jobs, then reload the jobs from ipcs.info file-------######
 
 #Load config parameters
-source ./ipcs.config
+source /etc/ipcs.config
 
 #---------remove all the jobs
 for i in `atq | awk '{print $1}'`;do atrm $i;done

@@ -4,7 +4,7 @@
 ##----Parameter:ipid eg: ./stop.sh 15
 
 #Load config parameters
-source ./ipcs.config
+source /etc/ipcs.config
 
 #----------Kill the specified running progress-------------#
 echo $1

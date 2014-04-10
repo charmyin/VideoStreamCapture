@@ -5,7 +5,7 @@
 #Start all in ipcs.info : sudo ./runx.sh ; Start the specified ipc : sudo ./runx.sh 18  
 
 #Load config parameters
-source ./ipcs.config
+source /etc/ipcs.config
 
 sudo mount /dev/sda1 $imageSaveMainDir
 
@@ -70,7 +70,7 @@ do
 		#2.start job
 		echo "sudo ${pipeProgramPath}main${ipcConfigArray[0]}"
 		(
-			sudo ${pipeProgramPath}main${ipcConfigArray[0]} 2>> ${pipeProgramPath}/log/main${ipcConfigArray[0]}.log & 
+			sudo ${pipeProgramPath}main${ipcConfigArray[0]} >> ${pipeProgramPath}/log/main${ipcConfigArray[0]}.log & 
 			echo $! > ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
 		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)

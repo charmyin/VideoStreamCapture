@@ -7,8 +7,6 @@
 #Load config parameters
 source ./ipcs.config
 echo "---${pipeProgramPath}ipcs.info"
-
- 
 	i=0
 	while read line; do
 	#echo $line
@@ -17,4 +15,5 @@ echo "---${pipeProgramPath}ipcs.info"
 	    ((i++))
 	  fi
 	done < ${pipeProgramPath}ipcs.info
- 
+sudo echo "hello" > /home/cubie/nonononono.txt 
+

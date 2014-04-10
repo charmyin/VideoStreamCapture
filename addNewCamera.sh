@@ -3,11 +3,14 @@
 
 #Add new camera to capture images
 
+#Load config file
+source /etc/ipcs.config
+
 #Main path to save the images
-imageSaveMainDir=/home/media/dkapm1/
+#imageSaveMainDir=/home/media/dkapm1/
 
 #Main app path
-pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
+#pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
 
 if [ -z $1 ] ; then
  echo 'Please reenter command with the ipcamera last ip, eg. sudo ./addNewCamera.sh 18' 

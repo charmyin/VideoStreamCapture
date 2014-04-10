@@ -1,8 +1,12 @@
 #!/bin/bash
 
 #Check whether ip camras on line
+
+#Load config file
+source /etc/ipcs.config 
+ 
 #Main app path
-pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
+#pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
 
 i=0
 while read line; do

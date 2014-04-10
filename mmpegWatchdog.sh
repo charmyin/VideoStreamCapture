@@ -5,11 +5,14 @@
 #Mmpeg will restarted after 300 seconds if the directory not updated
 timeStopedRestart=300
 
+#Load config file , dirpath
+source /etc/ipcs.config
+
 #Main path to save the images
-imageSaveMainDir=/home/media/dkapm1/
+#imageSaveMainDir=/home/media/dkapm1/
 
 #Main app path
-pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
+#pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
 
 i=0
 while read line; do
