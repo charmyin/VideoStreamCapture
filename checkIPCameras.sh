@@ -22,6 +22,8 @@ do
 
 	# -q quiet
 	# -c5 5 times of pings to perform
+
+	echo "Checking ${ipAddress}....."
 	sudo ping -q -c3 $ipAddress > /dev/null
 	 
 	if [ $? -eq 0 ]; then
@@ -29,6 +31,5 @@ do
 	else 
 		echo "${ipAddress} cannot be connected!!"
 	fi
-	
 	
 done 

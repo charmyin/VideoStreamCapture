@@ -3,8 +3,8 @@
 #############Stop the running capture program progress###########
 ##----Parameter:ipid eg: ./stop.sh 15
 
-#Main app path
-pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
+#Load config parameters
+source ./ipcs.config
 
 #----------Kill the specified running progress-------------#
 echo $1

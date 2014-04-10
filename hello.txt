@@ -1,0 +1,30 @@
+ffmpeg version 2.2 Copyright (c) 2000-2014 the FFmpeg developers
+  built on Mar 30 2014 19:08:11 with gcc 4.6 (Debian 4.6.3-14)
+  configuration: 
+  libavutil      52. 66.100 / 52. 66.100
+  libavcodec     55. 52.102 / 55. 52.102
+  libavformat    55. 33.100 / 55. 33.100
+  libavdevice    55. 10.100 / 55. 10.100
+  libavfilter     4.  2.100 /  4.  2.100
+  libswscale      2.  5.102 /  2.  5.102
+  libswresample   0. 18.100 /  0. 18.100
+Trailing options were found on the commandline.
+Hyper fast Audio and Video encoder
+usage: ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}...
+
+Use -h to get full help or, even better, run 'man ffmpeg'
+ffmpeg version 2.2 Copyright (c) 2000-2014 the FFmpeg developers
+  built on Mar 30 2014 19:08:11 with gcc 4.6 (Debian 4.6.3-14)
+  configuration: 
+  libavutil      52. 66.100 / 52. 66.100
+  libavcodec     55. 52.102 / 55. 52.102
+  libavformat    55. 33.100 / 55. 33.100
+  libavdevice    55. 10.100 / 55. 10.100
+  libavfilter     4.  2.100 /  4.  2.100
+  libswscale      2.  5.102 /  2.  5.102
+  libswresample   0. 18.100 /  0. 18.100
+Trailing options were found on the commandline.
+Hyper fast Audio and Video encoder
+usage: ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}...
+
+Use -h to get full help or, even better, run 'man ffmpeg'

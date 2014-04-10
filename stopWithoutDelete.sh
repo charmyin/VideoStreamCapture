@@ -2,9 +2,10 @@
 #############Stop the running capture program progress###########
 ##----Parameter:ipid eg: ./stop.sh 15
 
-#Load config parameters
-source ./ipcs.config
+#Main app path
+pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
 
+echo $1
 i=0
 while read line; do
 #echo $line
@@ -15,4 +16,4 @@ while read line; do
 done < ${pipeProgramPath}pids/$1.pids
 #remove the pids file
 sudo rm ${pipeProgramPath}pids/$1.pids
-echo "$1 has been stoped!"
+

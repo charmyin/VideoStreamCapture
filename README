@@ -1,5 +1,6 @@
 
-
+ipcs.info
+----------last sector of ip;ip;firstStartTime-firstEndTime-shotTimeInterval,secondtStartTime-secondEndTime-shotTimeInterval;secondRestartTime, thirdRestartTime, forthRestartTime This must be the last row, no more enter-------------
 
 ** runx.sh, rebuildAtJobsChangeFrame.sh, mmpegWatchdog.sh need set execute path.
 
@@ -16,4 +17,7 @@
 2.Once the files under camera storage directory stops increase after 5 minutes(Parent dir modified time 5 more minutes than now)
 	2.1 "sudo ./restart xx" restart the stoped mmpeg and main program   
 	
+3.Add a new camera
+	2.1 Add new line to ipcs.info
+	2.2 "sudo ./addNewCamera.sh 20"
 

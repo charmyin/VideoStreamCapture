@@ -2,7 +2,8 @@
 ##Author : Charmyin
 ####----Watch mmpeg is stoped, if it is stopped longer than 300 seconds, then restart it-----###
 
-timeStopedRestart=3000
+#Mmpeg will restarted after 300 seconds if the directory not updated
+timeStopedRestart=300
 
 #Main path to save the images
 imageSaveMainDir=/home/media/dkapm1/
@@ -25,7 +26,10 @@ do
 	#ipcConfigArray=($(echo $ipcConfigLine | tr ";" "\n"))
 	IFS=';' read -ra ipcConfigArray <<< "$ipcConfigLine"
 	ipNum=${ipcConfigArray[0]}
-	 
+	if [ ! -d $imageSaveMainDir$ipNum ] ; then
+		sudo echo "Directory $imageSaveMainDir$ipNum not exist, Camera $ipNum maybe new added, please use ./runx.sh $ipNum to start it -- `date +"%Y-%m-%d %H:%M:%S "`" | tee -a ${pipeProgramPath}/log/watchdog.log
+		continue
+	fi
 	#Show time difference between latest directory modified time and current time
 	latestDirName=`ls -t $imageSaveMainDir$ipNum | head -1`
 	echo "ls -t $imageSaveMainDir$ipNum | head -1"
@@ -33,11 +37,9 @@ do
 	latestDirModiTime=`date --utc --reference=$imageSaveMainDir${ipNum}/$latestDirName +%s`
 	currentTime=`date --utc +%s`
 	let "timeDifference=currentTime - latestDirModiTime"
-	sudo echo "sudo ./restart.sh $ipNum" > /home/cubie/hhhhhhhhheeeeeee.txt
 	if [ "$timeDifference" -gt "$timeStopedRestart" ]; then
 		sudo ./restart.sh $ipNum
 		sudo echo "Camera $ipNum stoped and then restarted at `date +"%Y-%m-%d %H:%M:%S "`" | tee -a ${pipeProgramPath}/log/watchdog.log
-		#sudo echo "sudo ./restart.sh $ipNum" > /home/cubie/hhhhhhheeeeee.txt
 	fi
 
 	#echo $timeDifference

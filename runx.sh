@@ -4,12 +4,8 @@
 #Saved in directory like : /home/media/dkapm1/20140405-20140425-30
 #Start all in ipcs.info : sudo ./runx.sh ; Start the specified ipc : sudo ./runx.sh 18  
 
-
-#Main app path
-pipeProgramPath=/home/cubie/Development/videocapture/VideoStreamCapture/
-
-#Main path to save the images
-imageSaveMainDir=/home/media/dkapm1/
+#Load config parameters
+source ./ipcs.config
 
 sudo mount /dev/sda1 $imageSaveMainDir
 
@@ -21,7 +17,7 @@ if [[ -n "$1" ]]; then
 		    ipcConfigLineArray[i]=${line}
 		  fi
 	  fi
-	done < ipcs.info
+	done < ${pipeProgramPath}ipcs.info
 else
 	i=0
 	while read line; do
@@ -74,7 +70,7 @@ do
 		#2.start job
 		echo "sudo ${pipeProgramPath}main${ipcConfigArray[0]}"
 		(
-			sudo ${pipeProgramPath}main${ipcConfigArray[0]} & 
+			sudo ${pipeProgramPath}main${ipcConfigArray[0]} 2>> ${pipeProgramPath}/log/main${ipcConfigArray[0]}.log & 
 			echo $! > ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
 		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)
@@ -83,7 +79,7 @@ do
 		let "countFile=countFile-2"
 		echo "sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg"
 		(
-			sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg &
+			sudo ffmpeg -f h264 -i /tmp/ipcfifo${ipcConfigArray[0]} -qscale:v 1 -f image2 -vf fps=fps=1/$imageShootInterval ${imageSaveMainDir}${ipcConfigArray[0]}/$dateTimeIntervalIndex/${countFile}%06d.jpg  2>> ${pipeProgramPath}/log/ffmpeg${ipcConfigArray[0]}.log &
 			echo $! >> ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
 		)
 	fi
