@@ -79,7 +79,7 @@ int main(){
     printf("socket error %m\n");
     exit(-1);
   }
-  printf("建立socket服务器成功!\n");
+  printf("寤虹珛socket鏈嶅姟鍣ㄦ垚鍔�\n");
 
   dr.sin_family=AF_INET;
   dr.sin_port=htons(34568);
@@ -90,11 +90,11 @@ int main(){
     close(sfd);
     exit(-1);
   }
-  printf("绑定地址成功!\n");
+  //printf("缁戝畾鍦板潃鎴愬姛!\n");
 
-  printf("listen successfully~\n");
+  //printf("listen successfully~\n");
 
-  printf("Accept successfully~\n");
+  //printf("Accept successfully~\n");
 
    //prepare struct data
   	struct tcpRequire testStruct;
@@ -121,7 +121,7 @@ int main(){
   }
 
   int countBuff;
- printf("Received %d string is : %s;\n", countBuff, buff);
+  printf("Received %d string is : %s;\n", countBuff, buff);
 
   // Get SessionID
 	cJSON *json, *jsonSessionIDObj;
@@ -324,7 +324,7 @@ if(fork()==0){
 	    printf("socket error %m\n");
 	    exit(-1);
 	  }
-	  printf("建立socket服务器成功!\n");
+	  printf("寤虹珛socket鏈嶅姟鍣ㄦ垚鍔�\n");
 
 	  dr2.sin_family=AF_INET;
 	  dr2.sin_port=htons(34568);
@@ -335,7 +335,7 @@ if(fork()==0){
 	    close(sfd2);
 	    exit(-1);
 	  }
-	  printf("Second connect绑定地址成功!\n");
+	  printf("Second connect缁戝畾鍦板潃鎴愬姛!\n");
 	  /************************************Send OPMonitor in child process*******************************************/
 	    secondStruct.firstInt=0x000000ff;
 	   	secondStruct.secondInt=sessionIDNum;
@@ -376,8 +376,8 @@ if(fork()==0){
 
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
-	      //创建文件
-        // int  ffd=open("/home/media/dkapm1/hello13.h264", O_RDWR|O_CREAT, 0666);
+	      //鍒涘缓鏂囦欢
+         int  ffd=0;
          // remove("/tmp/ipcfifo15");
           int fifocode=mkfifo(ipcFIFOPath, 0666);
           /*if(fifocode==-1){
@@ -390,33 +390,40 @@ if(fork()==0){
 			  perror("Open fifo ERROR~ \n");
 			  exit(0);
 			}
-	       ////异常处理
+	       ////寮傚父澶勭悊
 	       int i=1;
 	       int count;
 
-	       //循环接收文件数据
+	       //寰幆鎺ユ敹鏂囦欢鏁版嵁
 	       receiveSocketStruct(&returnStruct, sfd2);
 
 	       unsigned char buffVideo1[returnStruct.jsonSize];
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
 	       //write(ffd, buffVideo1,  returnStruct.jsonSize);
 	       write(fifoffd, buffVideo1, returnStruct.jsonSize);
-	       while(1){
-	    	    receiveSocketStruct(&returnStruct, sfd2);
-	    	    unsigned char buffVideo2[returnStruct.jsonSize];
-				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
+	       char buff[20];
+	       for(;;){
+	    	   char * videoFileName = nowNoSignal();
+	    	   snprintf(buff, sizeof buff, "%s.h264", videoFileName);
+	    	   ffd=open(buff, O_RDWR|O_CREAT, 0666);
+	    	   for(;;){
+					receiveSocketStruct(&returnStruct, sfd2);
+					unsigned char buffVideo2[returnStruct.jsonSize];
+					r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
 
-				//write(ffd, buffVideo2, returnStruct.jsonSize);
-			        write(fifoffd, buffVideo2, returnStruct.jsonSize);
-				//write(fifoffd, "Hello\n", strlen("hello\n"));
-				if(i%120==0){
-					printf("Printed %d~\n", i);
-					i=0;
-				}
-				 i++;
+				    write(ffd, buffVideo2, returnStruct.jsonSize);
+					write(fifoffd, buffVideo2, returnStruct.jsonSize);
+					//write(fifoffd, "Hello\n", strlen("hello\n"));
+					if(i%120==0){
+						printf("Printed %d~\n", i);
+						i=0;
+					}
+					i++;
+	    	   }
+	    	   close(ffd);
 	       }
 	       fflush(stdout);
-	      // close(ffd);
+
 	       close(fifoffd);
 	  	   exit(0);
 
@@ -461,7 +468,7 @@ if(fork()==0){
 		  return 0;
 	  }
 
-	  printf("Received string OPMonitorMain parent is : %s\n", buff8);
+	  //printf("Received string OPMonitorMain parent is : %s\n", buff8);
 
 	  while(1){
 		  sleep(20);
@@ -478,7 +485,7 @@ if(fork()==0){
 
 			requestKeepAliveString=cJSON_PrintUnformatted(jsonKeepalive);
 
-			printf("Send KeepAlive ----------- again  ----------%s\n",requestKeepAliveString);
+			//printf("Send KeepAlive ----------- again  ----------%s\n",requestKeepAliveString);
 
 			//Release json obj
 			cJSON_Delete(jsonKeepalive);

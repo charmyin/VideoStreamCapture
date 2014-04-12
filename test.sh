@@ -1,19 +1,13 @@
 #!/bin/bash
 #Author Charmyin
 ###########Auto run video capture program############
-#Saved in directory like : /home/media/dkapm1/20140405-20140425-30
-#Start all in ipcs.info : sudo ./runx.sh ; Start the specified ipc : sudo ./runx.sh 18  
-
-#Load config parameters
-source ./ipcs.config
-echo "---${pipeProgramPath}ipcs.info"
-	i=0
-	while read line; do
-	#echo $line
-	  if [[ -n "$line" ]]; then
-	    ipcConfigLineArray[i]=${line}
-	    ((i++))
-	  fi
-	done < ${pipeProgramPath}ipcs.info
-sudo echo "hello" > /home/cubie/nonononono.txt 
-
+ 
+ 
+fileArray=($(ls -t))
+a=1
+for fileName in "${fileArray[@]}"
+	do
+	  newFileName=$(printf "%06d.jpg" ${a}) #04 pad to length of 4
+	  echo " ${fileName} ${newFileName}"
+	  let a=a+1
+	done

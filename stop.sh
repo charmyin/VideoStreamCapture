@@ -3,7 +3,7 @@
 ##----Parameter:ipid eg: ./stop.sh 15
 
 #Load config parameters
-sudo source /etc/ipcs.config
+source /etc/ipcs.config
 
 i=0
 while read line; do
