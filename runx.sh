@@ -68,9 +68,9 @@ do
 		echo "mkdir $imageSaveMainDir${ipcConfigArray[0]}/$dateTimeIntervalIndex"
 		(sudo mkdir -p $imageSaveMainDir${ipcConfigArray[0]}/$dateTimeIntervalIndex)
 		#2.start job
-		echo "sudo ${pipeProgramPath}main${ipcConfigArray[0]}"
+		echo "sudo ${pipeProgramPath}main ${ipcConfigArray[1]} ${ipcConfigArray[0]} "
 		(
-			sudo ${pipeProgramPath}main${ipcConfigArray[0]} >> ${pipeProgramPath}/log/main${ipcConfigArray[0]}.log & 
+			sudo ${pipeProgramPath}main ${ipcConfigArray[1]} ${ipcConfigArray[0]} >> ${pipeProgramPath}/log/main${ipcConfigArray[0]}.log & 
 			echo $! > ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
 		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)

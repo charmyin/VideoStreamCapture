@@ -1,0 +1,123 @@
+Argument 1 is ipc's ipaddress, and argv[2] is the ipc's id code(Usually use last ip address!)
+Please use like this: sudo ./main 192.168.1.109 19 
+Socket on 192.168.109.18 created successfully!
+Received 4 string is : { "AliveInterval" : 20, "ChannelNum" : 1, "DeviceType " : "IPC", "ExtraChannel" : 0, "Ret" : 100, "SessionID" : "0x00000007" }
+;
+session id is : 0x00000007
+Send Name SystemInfo: {"Name":"SystemInfo","SessionID":"0x00000007"}
+Received string  SystemInfo is : { "Name" : "SystemInfo", "Ret" : 100, "SessionID" : "0x7", "SystemInfo" : { "AlarmInChannel" : 2, "AlarmOutChannel" : 1, "AudioInChannel" : 1, "BuildTime" : "2013-12-16 15:22:15", "CombineSwitch" : 0, "DeviceRunTime" : "0x00000A18", "DigChannel" : 0, "EncryptVersion" : "Unknown", "ExtraChannel" : 0, "HardWare" : "50H10L_S39", "HardWareVersion" : "Unknown", "SerialNo" : "c1a7bbbc32a82d7a", "SoftWareVersion" : "V4.02.R11.00002510.10010", "TalkInChannel" : 1, "TalkOutChannel" : 1, "UpdataTime" : "", "UpdataType" : "0x00000000", "VideoInChannel" : 1, "VideoOutChannel" : 1 } }
+;
+Send KeepAlive {"Name":"KeepAlive","SessionID":"0x00000007"}
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+size of now ===== 19
+Time setting {"Name":"OPTimeSettingNoRTC","OPTimeSettingNoRTC":"2014-04-13 10:07:23","SessionID":"0x00000007"}
+Send name & session id again : {"Name":"","SessionID":"0x00000007"}
+Received string Last 1 is : { "Name" : "", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string Last 2 is : { "Name" : "", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Send OPMonitor in father  process :: {"Name":"OPMonitor","OPMonitor":{"Action":"Start","Parameter":{"Channel":0,"CombinMode":"NONE","StreamType":"Main","TransMode":"TCP"}},"SessionID":"0x00000007"}
+Parent receive 1:
+Empty thing-----------
+Received string KeepAlive is : { "Name" : "OPMonitor", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:01", "Status" : "Start" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:02", "Status" : "Stop" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:03", "Status" : "Start" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:03", "Status" : "Stop" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:04", "Status" : "Start" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:11", "Status" : "Stop" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:11", "Status" : "Start" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StartTime" : "2014-04-13 10:09:21", "Status" : "Stop" }, "Name" : "AlarmInfo", "SessionID" : "0x7" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000007" }
+
+Received string KeepAlive is : { "AlarmInfo" : { "Channel" : 0, "Event" : "VideoMotion", "StaSocket on 192.168.109.18 created successfully!
+Received 4 string is : { "AliveInterval" : 20, "ChannelNum" : 1, "DeviceType " : "IPC", "ExtraChannel" : 0, "Ret" : 100, "SessionID" : "0x00000009" }
+;
+session id is : 0x00000009
+Send Name SystemInfo: {"Name":"SystemInfo","SessionID":"0x00000009"}
+Received string  SystemInfo is : { "Name" : "SystemInfo", "Ret" : 100, "SessionID" : "0x9", "SystemInfo" : { "AlarmInChannel" : 2, "AlarmOutChannel" : 1, "AudioInChannel" : 1, "BuildTime" : "2013-12-16 15:22:15", "CombineSwitch" : 0, "DeviceRunTime" : "0x00000A22", "DigChannel" : 0, "EncryptVersion" : "Unknown", "ExtraChannel" : 0, "HardWare" : "50H10L_S39", "HardWareVersion" : "Unknown", "SerialNo" : "c1a7bbbc32a82d7a", "SoftWareVersion" : "V4.02.R11.00002510.10010", "TalkInChannel" : 1, "TalkOutChannel" : 1, "UpdataTime" : "", "UpdataType" : "0x00000000", "VideoInChannel" : 1, "VideoOutChannel" : 1 } }
+;
+Send KeepAlive {"Name":"KeepAlive","SessionID":"0x00000009"}
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+size of now ===== 19
+Time setting {"Name":"OPTimeSettingNoRTC","OPTimeSettingNoRTC":"2014-04-13 10:17:09","SessionID":"0x00000009"}
+Send name & session id again : {"Name":"","SessionID":"0x00000009"}
+Received string Last 1 is : { "Name" : "", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string Last 2 is : { "Name" : "", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Send OPMonitor in father  process :: {"Name":"OPMonitor","OPMonitor":{"Action":"Start","Parameter":{"Channel":0,"CombinMode":"NONE","StreamType":"Main","TransMode":"TCP"}},"SessionID":"0x00000009"}
+Parent receive 1:
+Empty thing-----------
+Received string KeepAlive is : { "Name" : "OPMonitor", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x00000009" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 10

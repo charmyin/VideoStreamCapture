@@ -12,8 +12,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define ipcIPAddr "192.168.109.18"
-#define ipcFIFOPath "/tmp/ipcfifo18"
 //Send socket data
 // headData: struts data, contains size of jsonData
 // jsonData: json string data, parameters upload
@@ -60,9 +58,21 @@ int receiveSocketJson(int size, unsigned char *buff, int sfd){
 	return  recv(sfd, buff, size, MSG_WAITALL);
 }
 
+//192.168.109.11
+char* cameraIPAddress[20];
+//Fifo path(/tmp/ipcfifo) with Camera id code(Usually use the last ipaddress-11): /tmp/ipcfifo11
+char* cameraFIFOPath[20];
 
+int main(int argc, char *argv[])
+{
+  if(argc!=3){
+	  printf("Argument 1 is ipc's ipaddress, and argv[2] is the ipc's id code(Usually use last ip address!)\nPlease use like this: sudo ./main 192.168.1.109 19 \n");
+	  return 0;
+  }
 
-int main(){
+  snprintf(cameraIPAddress, sizeof cameraIPAddress, "%s", argv[1]);
+  snprintf(cameraFIFOPath, sizeof cameraFIFOPath, "/tmp/ipcfifo%s", argv[2]);
+
   //connect handler; vsfd is used to receive video data
   int sfd, ffd, vsfd;
   //r1 is used to receive video databuff
@@ -79,23 +89,17 @@ int main(){
     printf("socket error %m\n");
     exit(-1);
   }
-  printf("寤虹珛socket鏈嶅姟鍣ㄦ垚鍔�\n");
+  printf("Socket on %s created successfully!\n", cameraIPAddress);
 
   dr.sin_family=AF_INET;
   dr.sin_port=htons(34568);
-  dr.sin_addr.s_addr=inet_addr(ipcIPAddr);
+  dr.sin_addr.s_addr=inet_addr(cameraIPAddress);
   r=connect(sfd, (struct sockaddr*)&dr, sizeof(dr));
   if(r==-1){
     printf("connect error: %m\n");
     close(sfd);
     exit(-1);
   }
-  //printf("缁戝畾鍦板潃鎴愬姛!\n");
-
-  //printf("listen successfully~\n");
-
-  //printf("Accept successfully~\n");
-
    //prepare struct data
   	struct tcpRequire testStruct;
   	testStruct.firstInt=0x000000ff;
@@ -292,7 +296,6 @@ int main(){
 		return 0;
 	}
 
-
 	//Receive the last info
    receiveSocketStruct(&returnStruct, sfd);
    unsigned char buff4[returnStruct.jsonSize];
@@ -324,18 +327,17 @@ if(fork()==0){
 	    printf("socket error %m\n");
 	    exit(-1);
 	  }
-	  printf("寤虹珛socket鏈嶅姟鍣ㄦ垚鍔�\n");
 
 	  dr2.sin_family=AF_INET;
 	  dr2.sin_port=htons(34568);
-	  dr2.sin_addr.s_addr=inet_addr(ipcIPAddr);
+	  dr2.sin_addr.s_addr=inet_addr(cameraIPAddress);
 	  r=connect(sfd2, (struct sockaddr*)&dr2, sizeof(dr2));
 	  if(r==-1){
 	    printf("Second connect error: %m\n");
 	    close(sfd2);
 	    exit(-1);
 	  }
-	  printf("Second connect缁戝畾鍦板潃鎴愬姛!\n");
+	  printf("Second connect connected successfully!\n");
 	  /************************************Send OPMonitor in child process*******************************************/
 	    secondStruct.firstInt=0x000000ff;
 	   	secondStruct.secondInt=sessionIDNum;
@@ -376,54 +378,34 @@ if(fork()==0){
 
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
-	      //鍒涘缓鏂囦欢
          int  ffd=0;
          // remove("/tmp/ipcfifo15");
-          int fifocode=mkfifo(ipcFIFOPath, 0666);
+          int fifocode=mkfifo(cameraFIFOPath, 0666);
           /*if(fifocode==-1){
         	  perror("mkfifo ERROR~ \n");
         	  exit(0);
           }*/
-         int fifoffd=open(ipcFIFOPath,O_WRONLY);
+         int fifoffd=open(cameraFIFOPath,O_WRONLY);
           
          if(fifoffd==-1){
 			  perror("Open fifo ERROR~ \n");
 			  exit(0);
 			}
-	       ////寮傚父澶勭悊
-	       int i=1;
-	       int count;
 
-	       //寰幆鎺ユ敹鏂囦欢鏁版嵁
 	       receiveSocketStruct(&returnStruct, sfd2);
 
 	       unsigned char buffVideo1[returnStruct.jsonSize];
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
-	       //write(ffd, buffVideo1,  returnStruct.jsonSize);
 	       write(fifoffd, buffVideo1, returnStruct.jsonSize);
-	       char buff[20];
-	       for(;;){
-	    	   char * videoFileName = nowNoSignal();
-	    	   snprintf(buff, sizeof buff, "%s.h264", videoFileName);
-	    	   ffd=open(buff, O_RDWR|O_CREAT, 0666);
-	    	   for(;;){
-					receiveSocketStruct(&returnStruct, sfd2);
-					unsigned char buffVideo2[returnStruct.jsonSize];
-					r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
 
-				    write(ffd, buffVideo2, returnStruct.jsonSize);
-					write(fifoffd, buffVideo2, returnStruct.jsonSize);
-					//write(fifoffd, "Hello\n", strlen("hello\n"));
-					if(i%120==0){
-						printf("Printed %d~\n", i);
-						i=0;
-					}
-					i++;
-	    	   }
-	    	   close(ffd);
-	       }
+		   for(;;){
+				receiveSocketStruct(&returnStruct, sfd2);
+				unsigned char buffVideo2[returnStruct.jsonSize];
+				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
+				write(fifoffd, buffVideo2, returnStruct.jsonSize);
+		   }
+
 	       fflush(stdout);
-
 	       close(fifoffd);
 	  	   exit(0);
 
