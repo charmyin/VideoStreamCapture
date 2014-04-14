@@ -15,7 +15,7 @@ while read line; do
    sudo kill ${line}
     ((i++))
   fi
-done < ${pipeProgramPath}/pids/$1.pids
+done < ${pipeProgramPath}pids/$1.pids
 
 #--------------Restart the capture program with ip first id----------------#
 sudo ${pipeProgramPath}runx.sh $1

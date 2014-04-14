@@ -30,7 +30,7 @@ do
 	IFS=';' read -ra ipcConfigArray <<< "$ipcConfigLine"
 	ipNum=${ipcConfigArray[0]}
 	if [ ! -d $imageSaveMainDir$ipNum ] ; then
-		sudo echo "Directory $imageSaveMainDir$ipNum not exist, Camera $ipNum maybe new added, please use ./runx.sh $ipNum to start it -- `date +"%Y-%m-%d %H:%M:%S "`" | tee -a ${pipeProgramPath}/log/watchdog.log
+		sudo echo "Directory $imageSaveMainDir$ipNum not exist, Camera $ipNum maybe new added(which is not been run before), please use ./runx.sh $ipNum to start it -- `date +"%Y-%m-%d %H:%M:%S "`" | tee -a ${pipeProgramPath}log/watchdog.log
 		continue
 	fi
 	#Show time difference between latest directory modified time and current time
@@ -38,11 +38,11 @@ do
 	echo "ls -t $imageSaveMainDir$ipNum | head -1"
 	echo latestDirName is $latestDirName
 	latestDirModiTime=`date --utc --reference=$imageSaveMainDir${ipNum}/$latestDirName +%s`
-	currentTime=`date --utc +%s`
+	currentTime=`date --utc +%s` 
 	let "timeDifference=currentTime - latestDirModiTime"
 	if [ "$timeDifference" -gt "$timeStopedRestart" ]; then
-		sudo ./restart.sh $ipNum
-		sudo echo "Camera $ipNum stoped and then restarted at `date +"%Y-%m-%d %H:%M:%S "`" | tee -a ${pipeProgramPath}/log/watchdog.log
+		sudo ${pipeProgramPath}restart.sh $ipNum
+		sudo echo "Camera $ipNum stoped and then restarted at `date +"%Y-%m-%d %H:%M:%S "`" | tee -a ${pipeProgramPath}log/watchdog.log
 	fi
 
 	#echo $timeDifference

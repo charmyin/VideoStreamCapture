@@ -81,8 +81,8 @@ char* videoFileName[20];
 
 //Once capture a movement signal, then capture the video
 void videoCaptureHandler(){
-
-	 //If previous status is not video catpuring, Change video file name, and open it;
+	 alarm(20);
+	//If previous status is not video catpuring, Change video file name, and open it;
 	if(videoFlag==0){
 		 char * videoFileTimeForName = nowNoSignal();
 		 snprintf(videoFileName, sizeof videoFileName, "%s%s.h264", cameraVideoSavePath, videoFileTimeForName);
@@ -90,7 +90,6 @@ void videoCaptureHandler(){
 	}
 	printf("Starting video capturing! Write to file %s\n", videoFileName);
     videoFlag=1;
-    alarm(20);
 }
 
 //Alarm signal event handler, for stopping video capture when time is up
@@ -455,11 +454,11 @@ if((pidFork=fork())==0){
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
 				write(fifoffd, buffVideo2, returnStruct.jsonSize);
 				//If videoFlag opened, start to record to specified file.
-				if(videoFlag==1){
+				if(videoFlag){
 					write(videoffd, buffVideo2, returnStruct.jsonSize);
-					printf("--on loading--%d\n", videoffd);
 				}
 		   }
+		printf("Something wrong  onnonono %s\n", now());
 	       fflush(stdout);
 	       close(fifoffd);
 	  	   exit(0);
@@ -470,7 +469,7 @@ if((pidFork=fork())==0){
 		printf("%s file open error! \n", cameraChildPIDFilePath);
 		exit(0);
 	}
-	printf("ffff %s\n", cameraChildPIDFilePath);
+	//printf("ffff %s\n", cameraChildPIDFilePath);
 	fprintf(fp, "%d", pidFork);
 	fclose(fp);
 
