@@ -38,6 +38,10 @@ do
 	######Find or create the save directory by the datetime of now##########
 	dateTimeNow=`date +%Y%m%d`
 	dateTimeIntervalArray=($(echo ${ipcConfigArray[2]} | tr "," "\n"))
+	
+	#Log the start
+	echo "Start ${ipcConfigArray[0]} at `date "+%Y-%m-%d %H:%M:%S"`" >> ${pipeProgramPath}/log/runx.log
+	
 	##dateTime And Interval eg. 20140405-20140425-30
 	dateTimeIntervalIndex=-1
 	##intreval between shooting two images
@@ -68,9 +72,9 @@ do
 		echo "mkdir $imageSaveMainDir${ipcConfigArray[0]}/$dateTimeIntervalIndex"
 		(sudo mkdir -p $imageSaveMainDir${ipcConfigArray[0]}/$dateTimeIntervalIndex)
 		#2.start job
-		echo "sudo ${pipeProgramPath}main ${ipcConfigArray[1]} ${ipcConfigArray[0]} "
+		echo "sudo ${pipeProgramPath}main ${ipcConfigArray[1]} ${ipcConfigArray[0]} ${imageSaveMainDir}"
 		(
-			sudo ${pipeProgramPath}main ${ipcConfigArray[1]} ${ipcConfigArray[0]} >> ${pipeProgramPath}/log/main${ipcConfigArray[0]}.log & 
+			sudo ${pipeProgramPath}main ${ipcConfigArray[1]} ${ipcConfigArray[0]} ${imageSaveMainDir} >> ${pipeProgramPath}/log/main${ipcConfigArray[0]}.log & 
 			echo $! > ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
 		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)

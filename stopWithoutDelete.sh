@@ -18,5 +18,5 @@ while read line; do
   fi
 done < ${pipeProgramPath}pids/$1.pids
 #remove the pids file
-sudo rm ${pipeProgramPath}pids/$1.pids
+sudo rm ${pipeProgramPath}pids/$1.pids ${pipeProgramPath}pids/$1child.pid 
 

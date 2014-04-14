@@ -9,8 +9,11 @@
 #include "header/bufferOperate.h"
 #include "cjson/cJSON.h"
 #include "header/timeOperate.h"
-#include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 
 //Send socket data
 // headData: struts data, contains size of jsonData
@@ -58,21 +61,64 @@ int receiveSocketJson(int size, unsigned char *buff, int sfd){
 	return  recv(sfd, buff, size, MSG_WAITALL);
 }
 
+//If videoFlag=1, video will be recorded; if videoFlag=0, only image will be captured.
+int videoFlag=0;
+
 //192.168.109.11
 char* cameraIPAddress[20];
 //Fifo path(/tmp/ipcfifo) with Camera id code(Usually use the last ipaddress-11): /tmp/ipcfifo11
 char* cameraFIFOPath[20];
+//Path to store the video
+char* cameraVideoSavePath[50];
+//Camera id code(Usually use the last ipaddress-11)
+char* cameraIDCode[20];
+//Child Pid filepath: ./pids/11child.pid
+char* cameraChildPIDFilePath[50];
+
+int videoffd;
+
+char* videoFileName[20];
+
+//Once capture a movement signal, then capture the video
+void videoCaptureHandler(){
+
+	 //If previous status is not video catpuring, Change video file name, and open it;
+	if(videoFlag==0){
+		 char * videoFileTimeForName = nowNoSignal();
+		 snprintf(videoFileName, sizeof videoFileName, "%s%s.h264", cameraVideoSavePath, videoFileTimeForName);
+		 videoffd=open(videoFileName, O_RDWR|O_CREAT, 0666);
+	}
+	printf("Starting video capturing! Write to file %s\n", videoFileName);
+    videoFlag=1;
+    alarm(20);
+}
+
+//Alarm signal event handler, for stopping video capture when time is up
+void videoTimeupAlarm(){
+	videoFlag=0;
+	//TODO maybe promblem occured~
+	close(videoffd);
+	printf("Video capturing ended! Write to file %s\n", videoFileName);
+}
 
 int main(int argc, char *argv[])
 {
-  if(argc!=3){
-	  printf("Argument 1 is ipc's ipaddress, and argv[2] is the ipc's id code(Usually use last ip address!)\nPlease use like this: sudo ./main 192.168.1.109 19 \n");
+
+  //Set user defined signal
+  signal(SIGUSR1, videoCaptureHandler);
+  //Set alarm signal, for stopping video capture when time is up
+  signal(SIGALRM,videoTimeupAlarm);
+
+  if(argc!=4){
+	  printf("Argument 1 is ipc's ipaddress, and argv[2] is the ipc's id code(Usually use last ip address!), argv[3] is video storage parent path(/home/media/dkpm1)\nPlease use like this: ' sudo ./main 192.168.1.109 19 /home/media/dkpm1 ' \n");
 	  return 0;
   }
 
   snprintf(cameraIPAddress, sizeof cameraIPAddress, "%s", argv[1]);
+  snprintf(cameraIDCode, sizeof cameraIDCode, "%s", argv[2]);
   snprintf(cameraFIFOPath, sizeof cameraFIFOPath, "/tmp/ipcfifo%s", argv[2]);
-
+  snprintf(cameraVideoSavePath, sizeof cameraVideoSavePath, "%svideo%s/", argv[3], argv[2]);
+  snprintf(cameraChildPIDFilePath, sizeof cameraChildPIDFilePath, "./pids/%schild.pid", argv[2]);
   //connect handler; vsfd is used to receive video data
   int sfd, ffd, vsfd;
   //r1 is used to receive video databuff
@@ -114,8 +160,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-
-	//Receive and analysis the data
+  //Receive and analysis the data
   struct tcpRequire returnStruct;
   receiveSocketStruct(&returnStruct, sfd);
   unsigned char buff[returnStruct.jsonSize];
@@ -127,7 +172,7 @@ int main(int argc, char *argv[])
   int countBuff;
   printf("Received %d string is : %s;\n", countBuff, buff);
 
-  // Get SessionID
+    // Get SessionID
 	cJSON *json, *jsonSessionIDObj;
 	json=cJSON_Parse(buff);
 	jsonSessionIDObj = cJSON_GetObjectItem(json, "SessionID");
@@ -317,7 +362,8 @@ int main(int argc, char *argv[])
   printf("Received string Last 2 is : %s\n", buff5);
 
 //Create thread to receive video stream
-if(fork()==0){
+int pidFork;
+if((pidFork=fork())==0){
 	//socket 2 used for receving avc stream(.h264)
       int sfd2;
 	  struct sockaddr_in dr2;
@@ -378,7 +424,6 @@ if(fork()==0){
 
 	      printf("Received string OPMonitor in child is : %s\n", buff6);
           sleep(1);
-         int  ffd=0;
          // remove("/tmp/ipcfifo15");
           int fifocode=mkfifo(cameraFIFOPath, 0666);
           /*if(fifocode==-1){
@@ -388,9 +433,9 @@ if(fork()==0){
          int fifoffd=open(cameraFIFOPath,O_WRONLY);
           
          if(fifoffd==-1){
-			  perror("Open fifo ERROR~ \n");
-			  exit(0);
-			}
+		   perror("Open fifo ERROR~ \n");
+		   exit(0);
+		 }
 
 	       receiveSocketStruct(&returnStruct, sfd2);
 
@@ -398,19 +443,38 @@ if(fork()==0){
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
 	       write(fifoffd, buffVideo1, returnStruct.jsonSize);
 
+	       //Create the dir to store video files
+	       struct stat st = {0};
+	       if (stat(cameraVideoSavePath, &st) == -1) {
+	           mkdir(cameraVideoSavePath, 0777);
+	       }
+
 		   for(;;){
 				receiveSocketStruct(&returnStruct, sfd2);
 				unsigned char buffVideo2[returnStruct.jsonSize];
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
 				write(fifoffd, buffVideo2, returnStruct.jsonSize);
+				//If videoFlag opened, start to record to specified file.
+				if(videoFlag==1){
+					write(videoffd, buffVideo2, returnStruct.jsonSize);
+					printf("--on loading--%d\n", videoffd);
+				}
 		   }
-
 	       fflush(stdout);
 	       close(fifoffd);
 	  	   exit(0);
-
   }else{
-	  sleep(1);
+	//Save child pid to a pids/15child.pid
+	FILE *fp = fopen(cameraChildPIDFilePath, "w+");
+	if(fp==-1){
+		printf("%s file open error! \n", cameraChildPIDFilePath);
+		exit(0);
+	}
+	printf("ffff %s\n", cameraChildPIDFilePath);
+	fprintf(fp, "%d", pidFork);
+	fclose(fp);
+
+	sleep(1);
 	 /************************************Send OPMonitor in parent  process*******************************************/
 	secondStruct.firstInt=0x000000ff;
 	secondStruct.secondInt=sessionIDNum;
@@ -453,7 +517,7 @@ if(fork()==0){
 	  //printf("Received string OPMonitorMain parent is : %s\n", buff8);
 
 	  while(1){
-		  sleep(20);
+		    sleep(20);
 		  	secondStruct.firstInt=0x000000ff;
 			secondStruct.secondInt=sessionIDNum;
 			secondStruct.thirdInt=0x0;

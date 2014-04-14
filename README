@@ -21,3 +21,8 @@ ipcs.info
 	2.1 Add new line to ipcs.info
 	2.2 "sudo ./addNewCamera.sh 20"
 
+
+****smtpServer
+   This is used for detecting camera video movement , it receive movement signal from ipc, then send signal to 
+main program pid, then main program write video to file.
+   if you wanna use it , type: "sudo ./smtpServer"
