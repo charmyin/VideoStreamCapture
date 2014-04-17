@@ -407,7 +407,7 @@ if(fork()==0){
 
 	       fflush(stdout);
 	       close(fifoffd);
-	  	   exit(0);
+	       exit(0);
 
   }else{
 	  sleep(1);
@@ -485,7 +485,7 @@ if(fork()==0){
 			  printf("Something has wrong on Receiving first data~");
 			  return 0;
 		   }
-		   printf("Received string KeepAlive is : %s\n", buff3);
+		   //printf("Received string KeepAlive is : %s\n", buff3);
 	  }
 
 	  int *status;
