@@ -1,0 +1,70 @@
+Socket on 192.168.109.16 created successfully!
+Received 4 string is : { "AliveInterval" : 20, "ChannelNum" : 1, "DeviceType " : "IPC", "ExtraChannel" : 0, "Ret" : 100, "SessionID" : "0x0000000F" }
+;
+session id is : 0x0000000F
+Send Name SystemInfo: {"Name":"SystemInfo","SessionID":"0x0000000F"}
+Received string  SystemInfo is : { "Name" : "SystemInfo", "Ret" : 100, "SessionID" : "0xf", "SystemInfo" : { "AlarmInChannel" : 2, "AlarmOutChannel" : 1, "AudioInChannel" : 1, "BuildTime" : "2013-12-16 15:22:15", "CombineSwitch" : 0, "DeviceRunTime" : "0x00001DDC", "DigChannel" : 0, "EncryptVersion" : "Unknown", "ExtraChannel" : 0, "HardWare" : "50H10L_S39", "HardWareVersion" : "Unknown", "SerialNo" : "8633571d89576f98", "SoftWareVersion" : "V4.02.R11.00002510.10010", "TalkInChannel" : 1, "TalkOutChannel" : 1, "UpdataTime" : "", "UpdataType" : "0x00000000", "VideoInChannel" : 1, "VideoOutChannel" : 1 } }
+;
+Send KeepAlive {"Name":"KeepAlive","SessionID":"0x0000000F"}
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+size of now ===== 19
+Time setting {"Name":"OPTimeSettingNoRTC","OPTimeSettingNoRTC":"2014-04-17 22:16:39","SessionID":"0x0000000F"}
+Send name & session id again : {"Name":"","SessionID":"0x0000000F"}
+Received string Last 1 is : { "Name" : "", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string Last 2 is : { "Name" : "", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+ffff ./pids/16child.pid
+Send OPMonitor in father  process :: {"Name":"OPMonitor","OPMonitor":{"Action":"Start","Parameter":{"Channel":0,"CombinMode":"NONE","StreamType":"Main","TransMode":"TCP"}},"SessionID":"0x0000000F"}
+Parent receive 1:
+Empty thing-----------
+Received string KeepAlive is : { "Name" : "OPMonitor", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" : "KeepAlive", "Ret" : 100, "SessionID" : "0x0000000F" }
+
+Received string KeepAlive is : { "Name" :

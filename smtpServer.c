@@ -17,7 +17,7 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <signal.h>
-
+#include "header/timeOperate.h"
 
 //Get last IP Integer, eg: line=192.168.1.122 ,return 122
 char* getLastIPInt(char* line) {
@@ -75,10 +75,10 @@ int main(){
     	continue;
     }
     char* lastIPInt = getLastIPInt(inet_ntoa(cadr.sin_addr));
-    printf("TCP and port %d, IP:%s:%u\n", cfd, lastIPInt, ntohs(cadr.sin_port));
+    printf("%s -- TCP and port %d, Camera IP:%s, port:%u\n", now(), cfd, lastIPInt, ntohs(cadr.sin_port));
     char childPidPath[30];
     snprintf(childPidPath, sizeof childPidPath, "pids/%schild.pid", lastIPInt);
-    printf("path is %s\n", childPidPath);
+    //printf("path is %s\n", childPidPath);
     close(cfd);
     //Get child pid from pids/18child.pid ,
     char childPid[10];
@@ -89,7 +89,7 @@ int main(){
 	}
 	fgets(childPid,10,p);
 	int childPidInt = atoi(childPid);
-	printf("the pid is %d\n", childPidInt);
+	//printf("the pid is %d\n", childPidInt);
 	fclose(p);
     //Send kill -10 1232
 	kill(childPidInt, SIGUSR1);

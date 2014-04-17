@@ -88,7 +88,8 @@ void videoCaptureHandler(){
 	}
 	printf("Starting video capturing! Write to file %s\n", videoFileName);
     videoFlag=1;
-    //Record 20 seconds
+    //Record 20 seconds video once signal comes, if comes in the period of recording,
+    //the timer will be added another 20 seconds.
     alarm(20);
 }
 
@@ -107,9 +108,11 @@ int main(int argc, char *argv[])
   signal(SIGUSR1, videoCaptureHandler);
   //Set alarm signal, for stopping video capture when time is up
   signal(SIGALRM,videoTimeupAlarm);
+  //Set alarm signal, for stopping video capture when time is up
+   signal(SIGALRM,videoTimeupAlarm);
 
   if(argc!=4){
-	  printf("Argument 1 is ipc's ipaddress, and argv[2] is the ipc's id code(Usually use last ip address!), argv[3] is video storage parent path(/home/media/dkpm1)\nPlease use like this: ' sudo ./main 192.168.1.109 19 /home/media/dkpm1 ' \n");
+	  printf("Argument 1 is ipc's ipaddress, and argv[2] is the ipc's id code(Usually use last ip address!), argv[3] is video storage parent path(/home/media/dkpm1/)\nPlease use like this: ' sudo ./videoCapture 192.168.1.109 19 /home/media/dkpm1/ ' \n");
 	  return 0;
   }
 
@@ -439,9 +442,10 @@ if((pidFork=fork())==0){
 				receiveSocketStruct(&returnStruct, sfd2);
 				unsigned char buffVideo2[returnStruct.jsonSize];
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
+
 				//write(, buffVideo2, returnStruct.jsonSize);
 				//If videoFlag opened, start to record to specified file.
-				if(videoFlag==1){
+				if(videoFlag){
 					write(videoffd, buffVideo2, returnStruct.jsonSize);
 					//printf("--on loading--%d\n", videoffd);
 				}
