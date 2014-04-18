@@ -437,18 +437,22 @@ if((pidFork=fork())==0){
 	       if (stat(cameraVideoSavePath, &st) == -1) {
 	           mkdir(cameraVideoSavePath, 0777);
 	       }
+	       //Parent pid
+	       int forkppid=getppid();
 
-		   for(;;){
+	       //If parent pid larger than 1, continue loop, else exit
+		   while(forkppid>1){
 				receiveSocketStruct(&returnStruct, sfd2);
 				unsigned char buffVideo2[returnStruct.jsonSize];
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
-
 				//write(, buffVideo2, returnStruct.jsonSize);
 				//If videoFlag opened, start to record to specified file.
 				if(videoFlag){
 					write(videoffd, buffVideo2, returnStruct.jsonSize);
 					//printf("--on loading--%d\n", videoffd);
 				}
+				//Get parent pid
+				forkppid=getppid();
 		   }
 	       fflush(stdout);
 //	       close(fifoffd);
@@ -507,7 +511,7 @@ if((pidFork=fork())==0){
 	  //printf("Received string OPMonitorMain parent is : %s\n", buff8);
 
 	  while(1){
-		    sleep(20);
+		    sleep(30);
 		  	secondStruct.firstInt=0x000000ff;
 			secondStruct.secondInt=sessionIDNum;
 			secondStruct.thirdInt=0x0;
@@ -536,7 +540,7 @@ if((pidFork=fork())==0){
 		   receiveSocketStruct(&returnStruct, sfd);
 		   unsigned char buff3[returnStruct.jsonSize];
 		   if(receiveSocketJson(returnStruct.jsonSize, buff3, sfd)==-1){
-			  printf("Something has wrong on Receiving first data~");
+			  printf("%s --- Something has wrong on Receiving first data~", now());
 			  return 0;
 		   }
 		   printf("Received string KeepAlive is : %s\n", buff3);

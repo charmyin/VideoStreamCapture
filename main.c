@@ -398,11 +398,19 @@ if(fork()==0){
 	       recv(sfd2,  buffVideo1, returnStruct.jsonSize, MSG_WAITALL);
 	       write(fifoffd, buffVideo1, returnStruct.jsonSize);
 
-		   for(;;){
-				receiveSocketStruct(&returnStruct, sfd2);
+	       //Parent pid
+	       int forkppid=getppid();
+	       //If parent pid larger than 1, continue loop, else exit
+		   while(forkppid>1){
+				r=receiveSocketStruct(&returnStruct, sfd2);
 				unsigned char buffVideo2[returnStruct.jsonSize];
 				r=recv(sfd2, buffVideo2, returnStruct.jsonSize, MSG_WAITALL);
 				write(fifoffd, buffVideo2, returnStruct.jsonSize);
+				if(r==-1){
+					printf("At %s---On receving h264 stream, there is some thing wrong\n", now());
+				}
+				//Get parent pid
+				forkppid=getppid();
 		   }
 
 	       fflush(stdout);

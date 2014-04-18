@@ -66,8 +66,8 @@ do
 		#Start the jobs
 		echo "sudo ${pipeProgramPath}videoCapture ${ipcConfigArray[1]} ${ipcConfigArray[0]} ${imageSaveMainDir}"
 		(
-			sudo ${pipeProgramPath}videoCapture ${ipcConfigArray[1]} ${ipcConfigArray[0]} ${imageSaveMainDir} >> ${pipeProgramPath}log/main${ipcConfigArray[0]}.log & 
-			echo $! > ${pipeProgramPath}/pids/${ipcConfigArray[0]}.pids
+			sudo ${pipeProgramPath}videoCapture ${ipcConfigArray[1]} ${ipcConfigArray[0]} ${imageSaveMainDir} >> ${pipeProgramPath}log/${ipcConfigArray[0]}video.log & 
+			echo $! > ${pipeProgramPath}/pids/${ipcConfigArray[0]}video.pids
 			break
 		)
 		#(sudo mkdir /home/media/dkapm1/$dateTimeIntervalIndex)

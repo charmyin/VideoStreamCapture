@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : TCPClient.c
+ Name        : smtpServer.c
  Author      : charmyin
  Version     :
  Copyright   : Copy by yourself~

@@ -18,10 +18,11 @@ if [ -z $1 ] ; then
 fi
 
 #Delete old related files and directories
-read -p "Are you sure delete old images and files about ip camera $1?(yes/no)" isDelete
+read -p "Are you sure delete old images, videos and files about ip camera $1?(yes/no)" isDelete
 if [ "$isDelete" = "yes" ] ; then
 	#Remove images
 	sudo rm -r ${imageSaveMainDir}$1
+	sudo rm -r ${imageSaveMainDir}video$1
 	echo "Deleted ${imageSaveMainDir}$1 ! "
 else
 	echo "Do nothing!"
@@ -29,5 +30,5 @@ else
 fi
 
 #run the camera
-sudo ${pipeProgramPath}runx.sh $1 
-
+sudo ${pipeProgramPath}timelapse.sh $1 
+sudo ${pipeProgramPath}timeVideoLapse.sh $1 
