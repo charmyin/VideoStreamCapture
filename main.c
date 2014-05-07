@@ -494,6 +494,7 @@ if(fork()==0){
 			  return 0;
 		   }
 		   //printf("Received string KeepAlive is : %s\n", buff3);
+		   printf("Main is running at %s\n", now());
 	  }
 
 	  int *status;

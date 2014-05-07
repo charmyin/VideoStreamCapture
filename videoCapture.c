@@ -86,7 +86,7 @@ void videoCaptureHandler(){
 		 snprintf(videoFileName, sizeof videoFileName, "%s%s.h264", cameraVideoSavePath, videoFileTimeForName);
 		 videoffd=open(videoFileName, O_RDWR|O_CREAT, 0666);
 	}
-	printf("Starting video capturing! Write to file %s\n", videoFileName);
+	printf("%s--Starting video capturing! Write to file %s\n", now(), videoFileName);
     videoFlag=1;
     //Record 20 seconds video once signal comes, if comes in the period of recording,
     //the timer will be added another 20 seconds.
@@ -543,7 +543,8 @@ if((pidFork=fork())==0){
 			  printf("%s --- Something has wrong on Receiving first data~", now());
 			  return 0;
 		   }
-		   printf("Received string KeepAlive is : %s\n", buff3);
+		   // printf("Received string KeepAlive is : %s\n", buff3);
+		   printf("VideoCapture is running at %s\n", now());
 	  }
 
 	  int *status;
